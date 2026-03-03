@@ -1,3 +1,4 @@
+import mysql.connector
 from Config import db_config
 
 #🔌 Establish connection

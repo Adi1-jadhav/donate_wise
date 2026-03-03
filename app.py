@@ -2,8 +2,12 @@ from flask import Flask
 from routes.auth import auth
 from routes.main import main
 from routes.admin import admin_bp
+from db.migrate import run_migrations
 
 def create_app():
+    # 🚀 Pre-flight check: setup tables if missing
+    run_migrations()
+
     app = Flask(__name__)
     app.secret_key = 'your_secret_key_here'
 

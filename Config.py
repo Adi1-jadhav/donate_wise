@@ -1,7 +1,13 @@
 import os
+try:
+    from dotenv import load_dotenv
+    # 📁 Load .env variables locally
+    load_dotenv()
+except ImportError:
+    # 🌍 Silent fail: handled by Render env-vars in cloud
+    pass
 
 # 📂 Database Configuration
-# Uses environment variables in production, falls back to local 'root/root' for development
 db_config = {
     'host': os.getenv('DB_HOST', 'localhost'),
     'user': os.getenv('DB_USER', 'root'),

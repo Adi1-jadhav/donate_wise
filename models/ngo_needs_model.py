@@ -27,7 +27,7 @@ def get_all_active_needs():
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
     cur.execute("""
-        SELECT n.*, o.org_name, o.address as ngo_location 
+        SELECT n.*, o.org_name, o.location as ngo_location 
         FROM ngo_needs n
         JOIN ngos o ON n.ngo_id = o.id
         WHERE n.status = 'Open'

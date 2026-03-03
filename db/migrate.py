@@ -2,13 +2,13 @@ from db.database import get_db_connection
 from werkzeug.security import generate_password_hash
 
 def run_migrations():
-    print("🚀 Starting database migrations...")
+    print("🚀 Starting robust database migrations...")
     try:
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # 1. Users Table
-        print("Creating 'users' table...")
+        # 1. Users Table (Donors & Admins)
+        print("Ensuring 'users' table...")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -19,21 +19,31 @@ def run_migrations():
             )
         """)
 
-        # 2. NGOs info table
-        print("Creating 'ngos' table...")
+        # 2. NGOs Table (Self-contained)
+        print("Ensuring 'ngos' table...")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS ngos (
-                id INT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 org_name VARCHAR(200),
-                address TEXT,
+                contact_email VARCHAR(100) UNIQUE,
+                location VARCHAR(255),
+                mission TEXT,
+                password_hash VARCHAR(255),
                 license_no VARCHAR(50),
-                status VARCHAR(20) DEFAULT 'pending',
-                FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+                verified BOOLEAN DEFAULT FALSE,
+                status VARCHAR(20) DEFAULT 'Pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        
+        # Robust check for 'location' vs 'address' column in ngos
+        try:
+            cur.execute("ALTER TABLE ngos ADD COLUMN location VARCHAR(255) AFTER contact_email")
+            print("  Added 'location' column to 'ngos'")
+        except: pass
 
         # 3. Donations Table
-        print("Creating 'donations' table...")
+        print("Ensuring 'donations' table...")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS donations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,7 +61,7 @@ def run_migrations():
         """)
 
         # 4. Donation Claims Table
-        print("Creating 'donation_claims' table...")
+        print("Ensuring 'donation_claims' table...")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS donation_claims (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,14 +69,12 @@ def run_migrations():
                 ngo_id INT,
                 pickup_time DATETIME,
                 status VARCHAR(20) DEFAULT 'claimed',
-                FOREIGN KEY (donation_id) REFERENCES donations(id) ON DELETE CASCADE,
-                FOREIGN KEY (ngo_id) REFERENCES users(id) ON DELETE CASCADE
+                FOREIGN KEY (donation_id) REFERENCES donations(id) ON DELETE CASCADE
             )
         """)
 
         # 5. NGO Needs Table
-        print("Creating 'ngo_needs' table...")
-        # Note: references 'ngos(id)' which is why 'ngos' table must exist first
+        print("Ensuring 'ngo_needs' table...")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS ngo_needs (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -82,7 +90,7 @@ def run_migrations():
             )
         """)
 
-        # 6. Ensure default Admin exists
+        # 6. Ensure default Admin exists in users table
         print("Checking for default admin...")
         hashed = generate_password_hash('admin123')
         cur.execute('INSERT IGNORE INTO users (name, email, password_hash, role) VALUES (%s, %s, %s, %s)', 

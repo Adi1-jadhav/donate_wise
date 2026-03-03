@@ -46,7 +46,7 @@ def initialize_database():
         cur = conn.cursor()
         
         # 1. Create Users Table
-        cur.execute('CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), email VARCHAR(100) UNIQUE, password_hash VARCHAR(255), role VARCHAR(20) DEFAULT "donor")')
+        cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), email VARCHAR(100) UNIQUE, password_hash VARCHAR(255), role VARCHAR(20) DEFAULT 'donor')")
         
         # 2. Add an Admin account if it doesn't exist
         from werkzeug.security import generate_password_hash
@@ -54,13 +54,13 @@ def initialize_database():
         cur.execute('INSERT IGNORE INTO users (name, email, password_hash, role) VALUES (%s, %s, %s, %s)', ("Admin", "admin@donatewise.com", hashed, "admin"))
         
         # 3. Create Donations Table
-        cur.execute('CREATE TABLE IF NOT EXISTS donations (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT, title VARCHAR(200), description TEXT, predicted_category VARCHAR(50), quantity VARCHAR(50), pickup_status VARCHAR(20) DEFAULT "pending", created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, location VARCHAR(255), image_filename VARCHAR(255), FOREIGN KEY (user_id) REFERENCES users(id))')
+        cur.execute("CREATE TABLE IF NOT EXISTS donations (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT, title VARCHAR(200), description TEXT, predicted_category VARCHAR(50), quantity VARCHAR(50), pickup_status VARCHAR(20) DEFAULT 'pending', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, location VARCHAR(255), image_filename VARCHAR(255), FOREIGN KEY (user_id) REFERENCES users(id))")
         
         # 4. Create Claims Table
-        cur.execute('CREATE TABLE IF NOT EXISTS donation_claims (id INT AUTO_INCREMENT PRIMARY KEY, donation_id INT, ngo_id INT, pickup_time DATETIME, status VARCHAR(20) DEFAULT "claimed", FOREIGN KEY (donation_id) REFERENCES donations(id), FOREIGN KEY (ngo_id) REFERENCES users(id))')
+        cur.execute("CREATE TABLE IF NOT EXISTS donation_claims (id INT AUTO_INCREMENT PRIMARY KEY, donation_id INT, ngo_id INT, pickup_time DATETIME, status VARCHAR(20) DEFAULT 'claimed', FOREIGN KEY (donation_id) REFERENCES donations(id), FOREIGN KEY (ngo_id) REFERENCES users(id))")
         
         # 5. Create NGOs info table (if needed by your logic)
-        cur.execute('CREATE TABLE IF NOT EXISTS ngos (id INT PRIMARY KEY, org_name VARCHAR(200), address TEXT, license_no VARCHAR(50), status VARCHAR(20) DEFAULT "pending", FOREIGN KEY (id) REFERENCES users(id))')
+        cur.execute("CREATE TABLE IF NOT EXISTS ngos (id INT PRIMARY KEY, org_name VARCHAR(200), address TEXT, license_no VARCHAR(50), status VARCHAR(20) DEFAULT 'pending', FOREIGN KEY (id) REFERENCES users(id))")
 
         conn.commit()
         cur.close()

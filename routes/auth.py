@@ -20,11 +20,6 @@ def register():
             flash('Passwords do not match!')
             return redirect(url_for('auth.register'))
 
-        # 🛡️ Check if user already exists
-        if get_user_by_email(email):
-            flash('Email already registered. Please login.')
-            return redirect(url_for('auth.register'))
-
         hashed_password = generate_password_hash(password)
         register_user(name, email, hashed_password)
         flash('Account created! Please log in.')

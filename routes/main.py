@@ -188,25 +188,24 @@ def profile():
     ])
     recent = list(recent_cursor)
 
-    """
-    # Get recent history for the feed
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute(\"\"\"
-        SELECT d.id, d.title, d.predicted_category, d.quantity, 
-               d.pickup_status, d.created_at, d.location, d.image_filename,
-               n.org_name as ngo_name
-        FROM donations d
-        LEFT JOIN donation_claims dc ON d.id = dc.donation_id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        WHERE d.user_id = %s
-        ORDER BY d.created_at DESC
-        LIMIT 5
-    \"\"\", (user_id,))
-    recent = cur.fetchall()
-    cur.close()
-    conn.close()
-    """
+    # # Get recent history for the feed
+    # conn = get_db_connection()
+    # cur = conn.cursor(dictionary=True)
+    # cur.execute("""
+    #     SELECT d.id, d.title, d.predicted_category, d.quantity, 
+    #            d.pickup_status, d.created_at, d.location, d.image_filename,
+    #            n.org_name as ngo_name
+    #     FROM donations d
+    #     LEFT JOIN donation_claims dc ON d.id = dc.donation_id
+    #     LEFT JOIN ngos n ON dc.ngo_id = n.id
+    #     WHERE d.user_id = %s
+    #     ORDER BY d.created_at DESC
+    #     LIMIT 5
+    # """, (user_id,))
+    # recent = cur.fetchall()
+    # cur.close()
+    # conn.close()
+
     
     return render_template('profile.html',
                            user_name=session.get('name', 'Donor'),
@@ -472,24 +471,23 @@ def history():
     ])
     history_data = list(history_cursor)
     
-    """
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    
-    # Fetch user donations with claim info if available
-    query = \"\"\"
-        SELECT d.*, n.org_name as ngo_name, n.location as ngo_location, 
-               dc.pickup_time as scheduled_time, 
-               dc.status as claim_status, dc.pickup_notes
-        FROM donations d
-        LEFT JOIN donation_claims dc ON d.id = dc.donation_id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        WHERE d.user_id = %s
-        ORDER BY d.created_at DESC
-    \"\"\"
-    cur.execute(query, (user_id,))
-    history_data = cur.fetchall()
-    """
+    # conn = get_db_connection()
+    # cur = conn.cursor(dictionary=True)
+    # 
+    # # Fetch user donations with claim info if available
+    # query = """
+    #     SELECT d.*, n.org_name as ngo_name, n.location as ngo_location, 
+    #            dc.pickup_time as scheduled_time, 
+    #            dc.status as claim_status, dc.pickup_notes
+    #     FROM donations d
+    #     LEFT JOIN donation_claims dc ON d.id = dc.donation_id
+    #     LEFT JOIN ngos n ON dc.ngo_id = n.id
+    #     WHERE d.user_id = %s
+    #     ORDER BY d.created_at DESC
+    # """
+    # cur.execute(query, (user_id,))
+    # history_data = cur.fetchall()
+
     
     # Calculate stats for the impact summary
     total_donations = len(history_data)
@@ -554,22 +552,21 @@ def view_certificate(donation_id):
     ])
     donation = next(donation_cursor, None)
 
-    """
-    # Securely fetch only if it belongs to the user and is FULFILLED
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute(\"\"\"
-        SELECT d.*, u.name as donor_name, n.org_name as ngo_name
-        FROM donations d
-        JOIN users u ON d.user_id = u.id
-        LEFT JOIN donation_claims dc ON d.id = dc.donation_id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        WHERE d.id = %s AND d.user_id = %s AND d.pickup_status = 'Fulfilled'
-    \"\"\", (donation_id, session['user_id']))
-    donation = cur.fetchone()
-    cur.close()
-    conn.close()
-    \"\"\"
+    # # Securely fetch only if it belongs to the user and is FULFILLED
+    # conn = get_db_connection()
+    # cur = conn.cursor(dictionary=True)
+    # cur.execute("""
+    #     SELECT d.*, u.name as donor_name, n.org_name as ngo_name
+    #     FROM donations d
+    #     JOIN users u ON d.user_id = u.id
+    #     LEFT JOIN donation_claims dc ON d.id = dc.donation_id
+    #     LEFT JOIN ngos n ON dc.ngo_id = n.id
+    #     WHERE d.id = %s AND d.user_id = %s AND d.pickup_status = 'Fulfilled'
+    # """, (donation_id, session['user_id']))
+    # donation = cur.fetchone()
+    # cur.close()
+    # conn.close()
+
     
     if not donation:
         flash("Certificate not available yet. Impact must be verified first!")
@@ -658,22 +655,21 @@ def claim_donation():
     # --- MONGODB IMPLEMENTATION ---
     mark_donation_claimed(donation_id, session['ngo_id'], pickup_time, pickup_notes)
     
-    """
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(\"\"\"
-        INSERT INTO donation_claims (donation_id, ngo_id, pickup_time, pickup_notes, status)
-        VALUES (%s, %s, %s, %s, %s)
-    \"\"\", (donation_id, session['ngo_id'], pickup_time, pickup_notes, 'Scheduled'))
+    # conn = get_db_connection()
+    # cur = conn.cursor()
+    # # cur.execute("""
+    # #     INSERT INTO donation_claims (donation_id, ngo_id, pickup_time, pickup_notes, status)
+    # #     VALUES (%s, %s, %s, %s, %s)
+    # # """, (donation_id, session['ngo_id'], pickup_time, pickup_notes, 'Scheduled'))
+    # # 
+    # # cur.execute("""
+    # #     UPDATE donations SET claimed_by = %s WHERE id = %s
+    # # """, (session['ngo_id'], donation_id))
+    # # 
+    # # conn.commit()
+    # # cur.close()
+    # # conn.close()
 
-    cur.execute(\"\"\"
-        UPDATE donations SET claimed_by = %s WHERE id = %s
-    \"\"\", (session['ngo_id'], donation_id))
-
-    conn.commit()
-    cur.close()
-    conn.close()
-    \"\"\"
 
     ngo_name = ngo.get('org_name') or 'your NGO'
     notify_donor(donation_id, pickup_time, ngo_name)
@@ -817,19 +813,18 @@ def register_ngo_route():
             flash("✅ NGO registration successful! Awaiting admin approval. Please log in.")
             return redirect(url_for('auth.ngo_login'))
 
-            """
-            conn = None
-            cur = None
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute(\"\"\"
-                INSERT INTO ngos (org_name, contact_email, location, mission, password_hash, status)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            \"\"\", (org_name, contact_email, location, mission, hashed_password, 'Pending'))
-            conn.commit()
-            flash("✅ NGO registration successful! Awaiting admin approval. Please log in.")
-            return redirect(url_for('auth.ngo_login'))
-            \"\"\"
+            # conn = None
+            # cur = None
+            # conn = get_db_connection()
+            # cur = conn.cursor()
+            # cur.execute("""
+            #     INSERT INTO ngos (org_name, contact_email, location, mission, password_hash, status)
+            #     VALUES (%s, %s, %s, %s, %s, %s)
+            # """, (org_name, contact_email, location, mission, hashed_password, 'Pending'))
+            # conn.commit()
+            # flash("✅ NGO registration successful! Awaiting admin approval. Please log in.")
+            # return redirect(url_for('auth.ngo_login'))
+
 
         except Exception as e:
             print("❌ NGO registration failed:", e)

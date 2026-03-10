@@ -164,8 +164,13 @@
       </div>
 
       {% if session.donation_data.image_filename %}
+      {% if session.donation_data.image_filename.startswith('http') %}
+      <img src="{{ session.donation_data.image_filename }}" class="item-preview" alt="Donation Item"
+        style="object-fit: cover;">
+      {% else %}
       <img src="{{ url_for('static', filename='uploads/' ~ session.donation_data.image_filename) }}"
         class="item-preview" alt="Donation Item">
+      {% endif %}
       {% else %}
       <div class="item-preview d-flex align-items-center justify-content-center">
         <i class="bi bi-box-seam display-1 text-muted opacity-25"></i>

@@ -520,8 +520,12 @@
                         <!-- Item details row -->
                         <div class="d-flex align-items-start gap-3">
                             {% if item.image_filename %}
+                            {% if item.image_filename.startswith('http') %}
+                            <img src="{{ item.image_filename }}" class="item-thumb border" style="object-fit: cover;">
+                            {% else %}
                             <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
                                 class="item-thumb border">
+                            {% endif %}
                             {% else %}
                             <div class="item-thumb-placeholder">
                                 {% if item.predicted_category == 'Food' %}🍱

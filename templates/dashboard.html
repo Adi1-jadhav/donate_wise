@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Admin Dashboard | DonateWise</title>
     <meta charset="UTF-8">
@@ -13,32 +14,45 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
         }
+
         .navbar {
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .navbar-brand { font-weight: 800; letter-spacing: 0.5px; }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
         .page-header {
             background: #fff;
             padding: 2rem 0;
             border-bottom: 1px solid #e2e8f0;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
-        .page-header h2 { font-weight: 800; color: #1e293b; margin: 0; }
-        
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+        }
+
         .premium-card {
             border: none;
             border-radius: 16px;
             background: #fff;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             transition: transform 0.2s, box-shadow 0.2s;
             overflow: hidden;
         }
+
         .premium-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
         .premium-card .card-header {
             background: #f8fafc;
             border-bottom: 1px solid #e2e8f0;
@@ -47,7 +61,7 @@
             padding: 1.25rem 1.5rem;
             font-size: 1.1rem;
         }
-        
+
         .stat-badge {
             font-size: 0.95rem;
             padding: 0.6rem 1rem;
@@ -62,11 +76,12 @@
             background: #fff;
             padding: 1rem;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
         }
+
         .filter-group select {
             border-radius: 8px;
             border-color: #cbd5e1;
@@ -81,240 +96,336 @@
             border-radius: 12px;
             margin-bottom: 1.5rem;
             background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
         }
-        .donation-card:hover {
-            box-shadow: 0 12px 20px rgba(0,0,0,0.08);
-        }
-        
-        .donation-card.active { border-left-color: #3b82f6; }
-        .donation-card.recommended { border-left-color: #10b981; background: #f0fdf4; }
-        .donation-card[data-status="Pending"] { border-left-color: #f59e0b; }
-        .donation-card[data-status="Approved"] { border-left-color: #3b82f6; }
-        .donation-card[data-status="Declined"] { border-left-color: #ef4444; }
 
-        .donation-card .card-title { font-weight: 700; color: #1e293b; font-size: 1.25rem; }
-        .donation-card p { margin-bottom: 0.4rem; color: #475569; }
-        .badge-cat { background: #e0e7ff; color: #4338ca; border-radius: 6px; padding: 0.4rem 0.6rem; font-weight: 600; font-size: 0.8rem;}
+        .donation-card:hover {
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .donation-card.active {
+            border-left-color: #3b82f6;
+        }
+
+        .donation-card.recommended {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .donation-card[data-status="Pending"] {
+            border-left-color: #f59e0b;
+        }
+
+        .donation-card[data-status="Approved"] {
+            border-left-color: #3b82f6;
+        }
+
+        .donation-card[data-status="Declined"] {
+            border-left-color: #ef4444;
+        }
+
+        .donation-card .card-title {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.25rem;
+        }
+
+        .donation-card p {
+            margin-bottom: 0.4rem;
+            color: #475569;
+        }
+
+        .badge-cat {
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 6px;
+            padding: 0.4rem 0.6rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
 
         .details {
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .donation-card.active .details {
             display: block;
             opacity: 1;
         }
+
         .expand-btn {
             background: #f1f5f9;
             border: none;
             border-radius: 50%;
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             color: #475569;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
         }
-        .expand-btn:hover { background: #e2e8f0; color: #0f172a; }
-        .expand-btn i { font-size: 1.2rem; transition: transform 0.3s; }
-        .donation-card.active .expand-btn i { transform: rotate(180deg); }
 
-        .ngo-card { border-left: 4px solid #f59e0b; }
+        .expand-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .expand-btn i {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .donation-card.active .expand-btn i {
+            transform: rotate(180deg);
+        }
+
+        .ngo-card {
+            border-left: 4px solid #f59e0b;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- 🌐 Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#"><i class="bi bi-box2-heart-fill me-2"></i>DonateWise Admin</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navcol">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navcol">
-            <ul class="navbar-nav ms-auto fw-semibold">
-                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.donate') }}">Donate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.history') }}">History</a></li>
-                {% if session.get('user_id') %}
-                <li class="nav-item"><a class="nav-link text-white bg-white bg-opacity-25 rounded px-3 py-2 ms-2" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                {% endif %}
-            </ul>
+    <!-- 🌐 Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-box2-heart-fill me-2"></i>DonateWise Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse"
+                data-bs-target="#navcol">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol">
+                <ul class="navbar-nav ms-auto fw-semibold">
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.donate') }}">Donate</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.history') }}">History</a>
+                    </li>
+                    {% if session.get('user_id') %}
+                    <li class="nav-item"><a class="nav-link text-white bg-white bg-opacity-25 rounded px-3 py-2 ms-2"
+                            href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
+    </nav>
+
+    <div class="page-header text-center">
+        <h2><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h2>
+        <p class="text-muted mt-2 mb-0">Manage donations, approve NGOs, and monitor platform health.</p>
     </div>
-</nav>
 
-<div class="page-header text-center">
-    <h2><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h2>
-    <p class="text-muted mt-2 mb-0">Manage donations, approve NGOs, and monitor platform health.</p>
-</div>
+    <div class="container pb-5">
 
-<div class="container pb-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success border-0 shadow-sm text-center fw-bold rounded-3 mb-4"><i
+                class="bi bi-check-circle-fill me-2"></i>{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="alert alert-success border-0 shadow-sm text-center fw-bold rounded-3 mb-4"><i class="bi bi-check-circle-fill me-2"></i>{{ messages[0] }}</div>
-    {% endif %}
-    {% endwith %}
-
-    <div class="row">
-        <!-- 👥 NGO Approval Section -->
-        <div class="col-lg-5 mb-4">
-            <div class="premium-card h-100">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <span><i class="bi bi-building-check me-2 text-warning"></i>Pending NGOs</span>
-                    <span class="badge bg-warning text-dark rounded-pill">{{ pending_ngos|length }}</span>
-                </div>
-                <div class="card-body bg-light p-4">
-                    {% if pending_ngos|length > 0 %}
+        <div class="row">
+            <!-- 👥 NGO Approval Section -->
+            <div class="col-lg-5 mb-4">
+                <div class="premium-card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-building-check me-2 text-warning"></i>Pending NGOs</span>
+                        <span class="badge bg-warning text-dark rounded-pill">{{ pending_ngos|length }}</span>
+                    </div>
+                    <div class="card-body bg-light p-4">
+                        {% if pending_ngos|length > 0 %}
                         {% for ngo in pending_ngos %}
                         <div class="card ngo-card shadow-sm mb-3 border-0 rounded-3">
                             <div class="card-body p-3">
                                 <h5 class="fw-bold mb-1">{{ ngo.org_name }}</h5>
-                                <p class="small text-muted mb-2"><i class="bi bi-envelope me-1"></i>{{ ngo.contact_email }}</p>
+                                <p class="small text-muted mb-2"><i class="bi bi-envelope me-1"></i>{{ ngo.contact_email
+                                    }}</p>
                                 <p class="small mb-3"><strong>Location:</strong> {{ ngo.location }}</p>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ url_for('admin.approve_ngo', ngo_id=ngo.id) }}" class="btn btn-success btn-sm w-50 fw-bold"><i class="bi bi-check-lg me-1"></i>Approve</a>
-                                    <a href="{{ url_for('admin.reject_ngo', ngo_id=ngo.id) }}" class="btn btn-danger btn-sm w-50 fw-bold"><i class="bi bi-x-lg me-1"></i>Reject</a>
+                                    <a href="{{ url_for('admin.approve_ngo', ngo_id=ngo.id) }}"
+                                        class="btn btn-success btn-sm w-50 fw-bold"><i
+                                            class="bi bi-check-lg me-1"></i>Approve</a>
+                                    <a href="{{ url_for('admin.reject_ngo', ngo_id=ngo.id) }}"
+                                        class="btn btn-danger btn-sm w-50 fw-bold"><i
+                                            class="bi bi-x-lg me-1"></i>Reject</a>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
-                    {% else %}
+                        {% else %}
                         <div class="text-center py-5 text-muted">
                             <i class="bi bi-check2-circle fs-1 text-success mb-3 d-block"></i>
                             <p class="mb-0 fw-medium">All caught up! No pending NGOs.</p>
                         </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 📊 Donations & Filters -->
-        <div class="col-lg-7 mb-4">
-            <div class="premium-card mb-4">
-                <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Donations By Category</div>
-                <div class="card-body p-4 d-flex flex-wrap gap-2">
-                    {% for category, count in stats.items() %}
-                    <span class="stat-badge"><i class="bi bi-tag-fill me-1"></i>{{ category }}: <strong>{{ count }}</strong></span>
+            <!-- 📊 Donations & Filters -->
+            <div class="col-lg-7 mb-4">
+                <div class="premium-card mb-4">
+                    <div class="card-header"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Donations By Category
+                    </div>
+                    <div class="card-body p-4 d-flex flex-wrap gap-2">
+                        {% for category, count in stats.items() %}
+                        <span class="stat-badge"><i class="bi bi-tag-fill me-1"></i>{{ category }}: <strong>{{ count
+                                }}</strong></span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 🔍 Filter Controls -->
+                <div class="filter-group d-flex flex-column flex-md-row">
+                    <select id="filter-status" class="form-select flex-grow-1" onchange="applyFilters()">
+                        <option value="all">🚦 Pickup Status: All</option>
+                        <option value="Pending">🕒 Pending</option>
+                        <option value="Approved">✅ Approved</option>
+                        <option value="Declined">❌ Declined</option>
+                    </select>
+                    <select id="filter-rec" class="form-select flex-grow-1" onchange="applyFilters()">
+                        <option value="all">⭐ Recommendation: All</option>
+                        <option value="true">✅ AI Recommended</option>
+                        <option value="false">❌ Not Recommended</option>
+                    </select>
+                </div>
+
+                <!-- 🧩 Donation Cards -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Recent Donations</h4>
+                    <span class="badge bg-dark text-white rounded-pill px-3 py-2">Total: {{ donations|length }}</span>
+                </div>
+
+                <div id="donation-container">
+                    {% for d in donations %}
+                    <div class="donation-card p-3 {% if d.pickup_recommended %}recommended{% endif %}"
+                        data-status="{{ d.pickup_status or 'Pending' }}"
+                        data-rec="{{ 'true' if d.pickup_recommended else 'false' }}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="card-title mb-1">{{ d.title }}</h5>
+                                <span class="badge-cat">{{ d.predicted_category }}</span>
+                            </div>
+                            <button class="expand-btn" onclick="toggleCard(this)"><i
+                                    class="bi bi-chevron-down"></i></button>
+                        </div>
+
+                        <div class="row small mt-3">
+                            <div class="col-6">
+                                <p><i class="bi bi-person-fill text-muted me-1"></i><strong>Donor:</strong> <br>{{
+                                    d.user_name }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Location:</strong> <br>{{
+                                    d.location }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p><i class="bi bi-boxes text-info me-1"></i><strong>Quantity:</strong> <br>{{
+                                    d.quantity }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p><i class="bi bi-clock-fill text-warning me-1"></i><strong>Time:</strong> <br>{{
+                                    d.created_at.strftime('%Y-%m-%d %H:%M') if d.created_at else '' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 pt-2 border-top">
+                            {% if d.pickup_required %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success mb-1">Pickup
+                                Requested</span>
+                            {% if d.pickup_recommended %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary mb-1"><i
+                                    class="bi bi-robot me-1"></i>AI Recommended</span>
+                            {% else %}
+                            <span
+                                class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary mb-1">Not
+                                Recommended</span>
+                            {% endif %}
+                            {% else %}
+                            <span class="badge bg-light text-dark border mb-1">Drop-off</span>
+                            {% endif %}
+
+                            <span class="badge bg-dark bg-opacity-10 text-dark border ms-1">{{ d.pickup_status or
+                                'Pending' }}</span>
+                        </div>
+
+                        <div class="details mt-3 bg-light rounded-3 p-3">
+                            {% if d.pickup_time %}
+                            <p class="small"><strong><i class="bi bi-calendar-event me-1"></i>Preferred Pickup:</strong>
+                                {{ d.pickup_time }}</p>
+                            {% endif %}
+
+                            <div class="row mt-3">
+                                {% if d.image_filename %}
+                                <div class="col-md-6 mb-3">
+                                    <strong class="small text-muted d-block mb-1">Photo Attached</strong>
+                                    {% if d.image_filename.startswith('http') %}
+                                    <img src="{{ d.image_filename }}" class="img-fluid rounded shadow-sm border"
+                                        style="max-height:160px; object-fit: cover; width: 100%;">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) }}"
+                                        class="img-fluid rounded shadow-sm border"
+                                        style="max-height:160px; object-fit: cover; width: 100%;">
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                <div class="col-md-{{ '6' if d.image_filename else '12' }} mb-3">
+                                    <strong class="small text-muted d-block mb-1">Location Map</strong>
+                                    <iframe width="100%" height="160" class="rounded shadow-sm border" loading="lazy"
+                                        src="https://www.google.com/maps?q={{ d.location }}&output=embed"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+
+                            {% if d.pickup_required %}
+                            <div class="mt-3 text-end pt-3 border-top">
+                                <form method="POST" action="{{ url_for('main.verify_pickup') }}" class="d-inline">
+                                    <input type="hidden" name="donation_id" value="{{ d.id }}">
+                                    <button type="submit" name="action" value="approve"
+                                        class="btn btn-success fw-bold px-4 shadow-sm"><i
+                                            class="bi bi-check-circle me-1"></i>Approve Pickup</button>
+                                    <button type="submit" name="action" value="decline"
+                                        class="btn btn-danger fw-bold px-4 shadow-sm ms-2"><i
+                                            class="bi bi-x-circle me-1"></i>Decline</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
-
-            <!-- 🔍 Filter Controls -->
-            <div class="filter-group d-flex flex-column flex-md-row">
-                <select id="filter-status" class="form-select flex-grow-1" onchange="applyFilters()">
-                    <option value="all">🚦 Pickup Status: All</option>
-                    <option value="Pending">🕒 Pending</option>
-                    <option value="Approved">✅ Approved</option>
-                    <option value="Declined">❌ Declined</option>
-                </select>
-                <select id="filter-rec" class="form-select flex-grow-1" onchange="applyFilters()">
-                    <option value="all">⭐ Recommendation: All</option>
-                    <option value="true">✅ AI Recommended</option>
-                    <option value="false">❌ Not Recommended</option>
-                </select>
-            </div>
-
-            <!-- 🧩 Donation Cards -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Recent Donations</h4>
-                <span class="badge bg-dark text-white rounded-pill px-3 py-2">Total: {{ donations|length }}</span>
-            </div>
-
-            <div id="donation-container">
-                {% for d in donations %}
-                <div class="donation-card p-3 {% if d.pickup_recommended %}recommended{% endif %}"
-                     data-status="{{ d.pickup_status or 'Pending' }}"
-                     data-rec="{{ 'true' if d.pickup_recommended else 'false' }}">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h5 class="card-title mb-1">{{ d.title }}</h5>
-                            <span class="badge-cat">{{ d.predicted_category }}</span>
-                        </div>
-                        <button class="expand-btn" onclick="toggleCard(this)"><i class="bi bi-chevron-down"></i></button>
-                    </div>
-                    
-                    <div class="row small mt-3">
-                        <div class="col-6"><p><i class="bi bi-person-fill text-muted me-1"></i><strong>Donor:</strong> <br>{{ d.user_name }}</p></div>
-                        <div class="col-6"><p><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Location:</strong> <br>{{ d.location }}</p></div>
-                        <div class="col-6"><p><i class="bi bi-boxes text-info me-1"></i><strong>Quantity:</strong> <br>{{ d.quantity }}</p></div>
-                        <div class="col-6"><p><i class="bi bi-clock-fill text-warning me-1"></i><strong>Time:</strong> <br>{{ d.created_at.strftime('%Y-%m-%d %H:%M') if d.created_at else '' }}</p></div>
-                    </div>
-
-                    <div class="mt-2 pt-2 border-top">
-                        {% if d.pickup_required %}
-                            <span class="badge bg-success bg-opacity-10 text-success border border-success mb-1">Pickup Requested</span>
-                            {% if d.pickup_recommended %}
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary mb-1"><i class="bi bi-robot me-1"></i>AI Recommended</span>
-                            {% else %}
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary mb-1">Not Recommended</span>
-                            {% endif %}
-                        {% else %}
-                            <span class="badge bg-light text-dark border mb-1">Drop-off</span>
-                        {% endif %}
-
-                        <span class="badge bg-dark bg-opacity-10 text-dark border ms-1">{{ d.pickup_status or 'Pending' }}</span>
-                    </div>
-
-                    <div class="details mt-3 bg-light rounded-3 p-3">
-                        {% if d.pickup_time %}
-                        <p class="small"><strong><i class="bi bi-calendar-event me-1"></i>Preferred Pickup:</strong> {{ d.pickup_time }}</p>
-                        {% endif %}
-                        
-                        <div class="row mt-3">
-                            {% if d.image_filename %}
-                            <div class="col-md-6 mb-3">
-                                <strong class="small text-muted d-block mb-1">Photo Attached</strong>
-                                <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) }}" class="img-fluid rounded shadow-sm border" style="max-height:160px; object-fit: cover; width: 100%;">
-                            </div>
-                            {% endif %}
-                            <div class="col-md-{{ '6' if d.image_filename else '12' }} mb-3">
-                                <strong class="small text-muted d-block mb-1">Location Map</strong>
-                                <iframe width="100%" height="160" class="rounded shadow-sm border" loading="lazy" src="https://www.google.com/maps?q={{ d.location }}&output=embed" allowfullscreen></iframe>
-                            </div>
-                        </div>
-
-                        {% if d.pickup_required %}
-                        <div class="mt-3 text-end pt-3 border-top">
-                            <form method="POST" action="{{ url_for('main.verify_pickup') }}" class="d-inline">
-                                <input type="hidden" name="donation_id" value="{{ d.id }}">
-                                <button type="submit" name="action" value="approve" class="btn btn-success fw-bold px-4 shadow-sm"><i class="bi bi-check-circle me-1"></i>Approve Pickup</button>
-                                <button type="submit" name="action" value="decline" class="btn btn-danger fw-bold px-4 shadow-sm ms-2"><i class="bi bi-x-circle me-1"></i>Decline</button>
-                            </form>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function toggleCard(btn) {
-        const card = btn.closest('.donation-card');
-        card.classList.toggle('active');
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleCard(btn) {
+            const card = btn.closest('.donation-card');
+            card.classList.toggle('active');
+        }
 
-    function applyFilters() {
-        const status = document.getElementById('filter-status').value;
-        const rec = document.getElementById('filter-rec').value;
+        function applyFilters() {
+            const status = document.getElementById('filter-status').value;
+            const rec = document.getElementById('filter-rec').value;
 
-        document.querySelectorAll('.donation-card').forEach(card => {
-            const cardStatus = card.getAttribute('data-status')?.trim() || 'Pending';
-            const cardRec = card.getAttribute('data-rec') === 'true';
+            document.querySelectorAll('.donation-card').forEach(card => {
+                const cardStatus = card.getAttribute('data-status')?.trim() || 'Pending';
+                const cardRec = card.getAttribute('data-rec') === 'true';
 
-            const matchStatus = (status === 'all') || (cardStatus === status);
-            const matchRec = (rec === 'all') || ((rec === 'true') === cardRec);
+                const matchStatus = (status === 'all') || (cardStatus === status);
+                const matchRec = (rec === 'all') || ((rec === 'true') === cardRec);
 
-            card.style.display = (matchStatus && matchRec) ? 'block' : 'none';
-        });
-    }
-</script>
+                card.style.display = (matchStatus && matchRec) ? 'block' : 'none';
+            });
+        }
+    </script>
 </body>
+
 </html>

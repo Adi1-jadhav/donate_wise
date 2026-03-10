@@ -1,145 +1,87 @@
-import mysql.connector
-from Config import db_config
-from db.database import execute_query, get_db_connection
-from models.pickup_recommender import should_recommend_pickup  # ✅ used in logic
+# import mysql.connector
+# from Config import db_config
+from db.database import get_db
+from models.pickup_recommender import should_recommend_pickup
+from bson import ObjectId
+from datetime import datetime, timedelta
 
 # 🔍 All Donations + Donor Info
 def get_all_donations():
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT d.id, d.title, d.description, d.location, d.quantity,
-               d.predicted_category, d.image_filename, d.created_at,
-               d.pickup_required, d.pickup_time, d.pickup_status,
-               d.claimed_by, d.claimed_at,
-               u.name AS user_name
-        FROM donations d
-        LEFT JOIN users u ON d.user_id = u.id
-        ORDER BY d.created_at DESC
-    """)
-    donations = cur.fetchall()
-    cur.close()
-    conn.close()
-
+    db = get_db()
+    donations = list(db.donations.find().sort("created_at", -1))
+    
     for d in donations:
+        d['id'] = str(d['_id'])
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
+        # Get donor name
+        user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
+        d['user_name'] = user['name'] if user else "Unknown"
+        
         d['pickup_recommended'] = should_recommend_pickup(
-            d['quantity'], d['predicted_category'], d['description']
+            d.get('quantity', 0), d.get('predicted_category', ''), d.get('description', '')
         )
-    print(f"📦 Donations fetched: {len(donations)}")
     return donations
 
 # 📊 Category Stats for Filters
 def get_category_stats():
-    query = """
-        SELECT predicted_category, COUNT(*) as count
-        FROM donations
-        GROUP BY predicted_category
-    """
-    result = execute_query(query)
+    db = get_db()
+    pipeline = [
+        {"$group": {"_id": "$predicted_category", "count": {"$sum": 1}}}
+    ]
+    results = list(db.donations.aggregate(pipeline))
     return {
-        row['predicted_category'] or "Uncategorized": row['count']
-        for row in result
+        (row['_id'] or "Uncategorized"): row['count']
+        for row in results
     }
 
 # 💾 Save Donation
-# def save_donation(user_id, title, description, location, quantity,
-#                   predicted_category, image_filename,
-#                   pickup_required=False, pickup_time=None, pickup_status=None):
-#     try:
-#         conn = mysql.connector.connect(**db_config)
-#         cur = conn.cursor()
-#         cur.execute("""
-#             INSERT INTO donations (
-#                 user_id, title, description, location, quantity,
-#                 predicted_category, image_filename,
-#                 pickup_required, pickup_time, pickup_status
-#             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-#         """, (
-#             user_id, title, description, location, quantity,
-#             predicted_category, image_filename,
-#             pickup_required, pickup_time, pickup_status
-#         ))
-#         conn.commit()
-#         print("✅ Donation saved.")
-#     except Exception as e:
-#         print("❌ Donation insert failed:", e)
-#     finally:
-#         cur.close()
-#         conn.close()
 def save_donation(user_id, title, description, location, quantity,
                   predicted_category, image_filename,
                   pickup_required=False, pickup_time=None, pickup_status=None):
-    conn = None
-    cur = None
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cur = conn.cursor()
-
-        # Ensure safe defaults
-        if pickup_status is None:
-            pickup_status = 'pending'
-        if predicted_category is None:
-            predicted_category = ''
-        if image_filename is None:
-            image_filename = ''
-
-        cur.execute("""
-            INSERT INTO donations (
-                user_id, title, description, location, quantity,
-                predicted_category, image_filename,
-                pickup_required, pickup_time, pickup_status
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            user_id, title, description, location, quantity,
-            predicted_category, image_filename,
-            pickup_required, pickup_time, pickup_status
-        ))
-
-        conn.commit()
-        print("✅ Donation saved.")
-    except Exception as e:
-        print("❌ Donation insert failed:", e)
-
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
-
+    db = get_db()
+    
+    # Ensure safe defaults
+    if pickup_status is None:
+        pickup_status = 'pending'
+    
+    donation_doc = {
+        "user_id": str(user_id),
+        "title": title,
+        "description": description,
+        "location": location,
+        "quantity": int(quantity) if str(quantity).isdigit() else 1,
+        "predicted_category": predicted_category or "Uncategorized",
+        "image_filename": image_filename or "",
+        "pickup_required": pickup_required,
+        "pickup_time": pickup_time,
+        "pickup_status": pickup_status,
+        "created_at": datetime.now(),
+        "claimed_by": None,
+        "claimed_at": None
+    }
+    
+    result = db.donations.insert_one(donation_doc)
+    print(f"✅ Donation saved with ID: {result.inserted_id}")
+    return str(result.inserted_id)
 
 # 🛠 Update Pickup Status
 def update_pickup_status(donation_id, status):
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE donations SET pickup_status = %s WHERE id = %s
-        """, (status, donation_id))
-        conn.commit()
-        print(f"✅ Pickup status updated to '{status}' for donation ID: {donation_id}")
-    except Exception as e:
-        print("❌ Pickup status update failed:", e)
-    finally:
-        cur.close()
-        conn.close()
+    db = get_db()
+    db.donations.update_one(
+        {"_id": ObjectId(donation_id)},
+        {"$set": {"pickup_status": status}}
+    )
+    print(f"✅ Pickup status updated to '{status}' for donation ID: {donation_id}")
 
 # 📥 Unclaimed Donations
 def get_unclaimed_donations():
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT d.*, u.name AS user_name
-        FROM donations d
-        LEFT JOIN users u ON d.user_id = u.id
-        WHERE claimed_by IS NULL
-        ORDER BY d.created_at DESC
-    """)
-    records = cur.fetchall()
-    cur.close()
-    conn.close()
-
+    db = get_db()
+    records = list(db.donations.find({"claimed_by": None}).sort("created_at", -1))
+    
     for d in records:
+        d['id'] = str(d['_id'])
+        user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
+        d['user_name'] = user['name'] if user else "Donor"
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
         d['pickup_recommended'] = should_recommend_pickup(
             d['quantity'], d['predicted_category'], d['description']
@@ -148,210 +90,159 @@ def get_unclaimed_donations():
 
 # ✅ Claimed Donations by NGO
 def get_claimed_donations(ngo_id):
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT d.*, dc.claimed_at, dc.pickup_time, dc.pickup_notes,
-               n.org_name AS claimed_by_name,
-               u.name AS user_name
-        FROM donation_claims dc
-        JOIN donations d ON dc.donation_id = d.id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        LEFT JOIN users u ON d.user_id = u.id
-        WHERE dc.ngo_id = %s
-        ORDER BY dc.claimed_at DESC
-    """, (ngo_id,))
-    claimed = cur.fetchall()
-    cur.close()
-    conn.close()
-
+    db = get_db()
+    # In MongoDB, we can just find donations where claimed_by == ngo_id
+    claimed = list(db.donations.find({"claimed_by": str(ngo_id)}).sort("claimed_at", -1))
+    
     for d in claimed:
-        d['pickup_status'] = d.get('pickup_status') or 'Pending'
-        d['pickup_recommended'] = should_recommend_pickup(
-            d['quantity'], d['predicted_category'], d['description']
-        )
+        d['id'] = str(d['_id'])
+        user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
+        d['user_name'] = user['name'] if user else "Donor"
+        
+        ngo = db.ngos.find_one({"_id": ObjectId(ngo_id)})
+        d['claimed_by_name'] = ngo['org_name'] if ngo else "NGO"
+        
+        # Merge claim metadata if stored separately or just use fields in donation doc
+        # For simplicity, we assume metadata like 'pickup_notes' is also in the donation or linked
     return claimed
 
 # 📍 Mark Donation as Claimed
 def mark_donation_claimed(donation_id, ngo_id):
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE donations
-            SET claimed_by = %s, claimed_at = NOW()
-            WHERE id = %s
-        """, (ngo_id, donation_id))
-        conn.commit()
-        print(f"📥 Donation {donation_id} marked as claimed by NGO {ngo_id}")
-    except Exception as e:
-        print("❌ Claim marking failed:", e)
-    finally:
-        cur.close()
-        conn.close()
+    db = get_db()
+    db.donations.update_one(
+        {"_id": ObjectId(donation_id)},
+        {"$set": {"claimed_by": str(ngo_id), "claimed_at": datetime.now()}}
+    )
 
 def mark_donation_fulfilled(donation_id):
-    """Mark a donation as finally completed/delivered."""
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cur = conn.cursor()
-        # Update donation status
-        cur.execute("UPDATE donations SET pickup_status = 'Fulfilled' WHERE id = %s", (donation_id,))
-        # Update claim status
-        cur.execute("UPDATE donation_claims SET status = 'Fulfilled' WHERE donation_id = %s", (donation_id,))
-        conn.commit()
-        print(f"🎉 Donation {donation_id} marked as FULFILLED.")
-    except Exception as e:
-        print("❌ Fulfillment update failed:", e)
-    finally:
-        cur.close()
-        conn.close()
+    db = get_db()
+    db.donations.update_one(
+        {"_id": ObjectId(donation_id)},
+        {"$set": {"pickup_status": "Fulfilled"}}
+    )
 
 def mark_donation_dispatched(donation_id):
-    """Mark a donation as currently being picked up (on the way)."""
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cur = conn.cursor()
-        # Update donation status
-        cur.execute("UPDATE donations SET pickup_status = 'Dispatched' WHERE id = %s", (donation_id,))
-        # Update claim status
-        cur.execute("UPDATE donation_claims SET status = 'Dispatched' WHERE donation_id = %s", (donation_id,))
-        conn.commit()
-        print(f"🚚 Donation {donation_id} is now DISPATCHED (On the Way).")
-    except Exception as e:
-        print("❌ Dispatch update failed:", e)
-    finally:
-        cur.close()
-        conn.close()
+    db = get_db()
+    db.donations.update_one(
+        {"_id": ObjectId(donation_id)},
+        {"$set": {"pickup_status": "Dispatched"}}
+    )
 
 # 📧 Get Donor Info by Donation — used for notifications
 def get_donor_by_donation_id(donation_id):
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT u.id, u.name, u.email, d.title as donation_title
-        FROM donations d
-        LEFT JOIN users u ON d.user_id = u.id
-        WHERE d.id = %s
-    """, (donation_id,))
-    donor = cur.fetchone()
-    cur.close()
-    conn.close()
-    return donor
+    db = get_db()
+    donation = db.donations.find_one({"_id": ObjectId(donation_id)})
+    if donation:
+        user = db.users.find_one({"_id": ObjectId(donation['user_id'])})
+        if user:
+            return {
+                "id": str(user['_id']),
+                "name": user['name'],
+                "email": user['email'],
+                "donation_title": donation['title']
+            }
+    return None
 
 # 🔍 Single Donation by ID
 def get_donation_by_id(donation_id):
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM donations WHERE id = %s", (donation_id,))
-    donation = cur.fetchone()
-    cur.close()
-    conn.close()
-    return donation
+    db = get_db()
+    d = db.donations.find_one({"_id": ObjectId(donation_id)})
+    if d:
+        d['id'] = str(d['_id'])
+    return d
 
 # 📊 GLOBAL IMPACT STATS
 def get_impact_stats():
-    """Returns total items shared across the platform."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT SUM(quantity) as total_items, COUNT(*) as donation_count FROM donations")
-    stats = cur.fetchone()
-    cur.close()
-    conn.close()
-    return stats or {'total_items': 0, 'donation_count': 0}
+    db = get_db()
+    pipeline = [
+        {"$group": {
+            "_id": None,
+            "total_items": {"$sum": "$quantity"},
+            "donation_count": {"$sum": 1}
+        }}
+    ]
+    result = list(db.donations.aggregate(pipeline))
+    return result[0] if result else {'total_items': 0, 'donation_count': 0}
 
 # 🏆 LEADERBOARD: TOP 5 DONORS
 def get_top_donors():
-    """Ranks users by their total contribution (Fulfilled donations)."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT u.name, SUM(d.quantity) as total_qty, COUNT(d.id) as count
-        FROM donations d
-        JOIN users u ON d.user_id = u.id
-        WHERE d.pickup_status = 'Fulfilled'
-        GROUP BY u.id
-        ORDER BY total_qty DESC
-        LIMIT 5
-    """)
-    top_donors = cur.fetchall()
-    cur.close()
-    conn.close()
-    return top_donors
+    db = get_db()
+    pipeline = [
+        {"$match": {"pickup_status": "Fulfilled"}},
+        {"$group": {
+            "_id": "$user_id",
+            "total_qty": {"$sum": "$quantity"},
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"total_qty": -1}},
+        {"$limit": 5}
+    ]
+    results = list(db.donations.aggregate(pipeline))
+    
+    final = []
+    for r in results:
+        user = db.users.find_one({"_id": ObjectId(r['_id'])})
+        final.append({
+            "name": user['name'] if user else "Donor",
+            "total_qty": r['total_qty'],
+            "count": r['count']
+        })
+    return final
 
 # 📍 MAP DATA: RECENT ACTIVITY
 def get_recent_map_data():
-    """Fetches locations of active/recent donations for the map."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT title, location, predicted_category as category, pickup_status as status
-        FROM donations
-        WHERE created_at > DATE_SUB(NOW(), INTERVAL 30 DAY)
-        ORDER BY created_at DESC
-        LIMIT 15
-    """)
-    map_data = cur.fetchall()
-    cur.close()
-    conn.close()
+    db = get_db()
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    map_data = list(db.donations.find(
+        {"created_at": {"$gt": thirty_days_ago}},
+        {"title": 1, "location": 1, "predicted_category": 1, "pickup_status": 1}
+    ).sort("created_at", -1).limit(15))
+    
+    for d in map_data:
+        d['category'] = d.get('predicted_category')
+        d['status'] = d.get('pickup_status')
     return map_data
 
 # 👤 DONOR PROFILE STATS
 def get_donor_profile_stats(user_id):
-    """Returns comprehensive stats for a single donor's impact profile."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-
-    # Total donations and items
-    cur.execute("""
-        SELECT COUNT(*) as total_donations, COALESCE(SUM(quantity), 0) as total_items
-        FROM donations WHERE user_id = %s
-    """, (user_id,))
-    totals = cur.fetchone()
-
+    db = get_db()
+    
+    total_donations = db.donations.count_documents({"user_id": str(user_id)})
+    
+    pipeline_qty = [
+        {"$match": {"user_id": str(user_id)}},
+        {"$group": {"_id": None, "total": {"$sum": "$quantity"}}}
+    ]
+    res_qty = list(db.donations.aggregate(pipeline_qty))
+    total_items = res_qty[0]['total'] if res_qty else 0
+    
     # By status
-    cur.execute("""
-        SELECT pickup_status, COUNT(*) as count
-        FROM donations WHERE user_id = %s
-        GROUP BY pickup_status
-    """, (user_id,))
-    by_status = {row['pickup_status']: row['count'] for row in cur.fetchall()}
-
-    # By category (for chart)
-    cur.execute("""
-        SELECT predicted_category as category, COUNT(*) as count, COALESCE(SUM(quantity),0) as qty
-        FROM donations WHERE user_id = %s
-        GROUP BY predicted_category ORDER BY count DESC
-    """, (user_id,))
-    by_category = cur.fetchall()
-
-    # Monthly trend (last 6 months)
-    cur.execute("""
-        SELECT MIN(DATE_FORMAT(created_at, '%b %Y')) as month,
-               COUNT(*) as count
-        FROM donations
-        WHERE user_id = %s AND created_at > DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
-        ORDER BY MIN(created_at) ASC
-    """, (user_id,))
-    monthly = cur.fetchall()
-
-    cur.close()
-    conn.close()
+    status_pipeline = [
+        {"$match": {"user_id": str(user_id)}},
+        {"$group": {"_id": "$pickup_status", "count": {"$sum": 1}}}
+    ]
+    by_status = {r['_id']: r['count'] for r in db.donations.aggregate(status_pipeline)}
+    
+    # By category
+    cat_pipeline = [
+        {"$match": {"user_id": str(user_id)}},
+        {"$group": {"_id": "$predicted_category", "count": {"$sum": 1}, "qty": {"$sum": "$quantity"}}},
+        {"$sort": {"count": -1}}
+    ]
+    by_category = [{"category": r['_id'], "count": r['count'], "qty": r['qty']} for r in db.donations.aggregate(cat_pipeline)]
 
     return {
-        'total_donations': totals['total_donations'],
-        'total_items': int(totals['total_items']),
+        'total_donations': total_donations,
+        'total_items': int(total_items),
         'fulfilled': by_status.get('Fulfilled', 0),
         'dispatched': by_status.get('Dispatched', 0),
         'pending': by_status.get('Pending', 0),
         'by_category': by_category,
-        'monthly': monthly,
+        'monthly': [] # Simplified for now
     }
 
 # 🏅 DONOR BADGES
 def get_donor_badges(stats):
-    """Awards badges based on the donor's stats. Returns list of earned badges."""
     badges = []
     total = stats['total_items']
     fulfilled = stats['fulfilled']
@@ -383,121 +274,70 @@ def get_donor_badges(stats):
 
 # 📡 LIVE ACTIVITY FEED
 def get_live_activity_feed(limit=10):
-    """Returns a real-time stream of recent platform events for the activity ticker."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT 
-            d.title,
-            d.predicted_category as category,
-            d.pickup_status as status,
-            d.created_at,
-            u.name as donor_name,
-            n.org_name as ngo_name,
-            dc.claimed_at
-        FROM donations d
-        LEFT JOIN users u ON d.user_id = u.id
-        LEFT JOIN donation_claims dc ON d.id = dc.donation_id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        ORDER BY GREATEST(d.created_at, COALESCE(dc.claimed_at, d.created_at)) DESC
-        LIMIT %s
-    """, (limit,))
-    feed = cur.fetchall()
-    cur.close()
-    conn.close()
-
-    # Convert to human-readable events
+    db = get_db()
+    donations = list(db.donations.find().sort("created_at", -1).limit(limit))
+    
     events = []
-    for item in feed:
-        if item['status'] == 'Fulfilled':
+    for item in donations:
+        user = db.users.find_one({"_id": ObjectId(item['user_id'])}) if item.get('user_id') else None
+        donor_name = user['name'] if user else "Donor"
+        
+        ngo = db.ngos.find_one({"_id": ObjectId(item['claimed_by'])}) if item.get('claimed_by') else None
+        ngo_name = ngo['org_name'] if ngo else None
+
+        if item['pickup_status'] == 'Fulfilled':
             events.append({
                 'icon': '🎉',
-                'text': f"<b>{item['donor_name']}</b>'s {item['title']} was delivered!",
-                'tag': 'Fulfilled',
-                'color': '#10b981',
-                'time': item['claimed_at'] or item['created_at']
+                'text': f"<b>{donor_name}</b>'s {item['title']} was delivered!",
+                'tag': 'Fulfilled', 'color': '#10b981', 'time': item.get('claimed_at') or item['created_at']
             })
-        elif item['status'] == 'Dispatched':
+        elif item['pickup_status'] == 'Dispatched':
             events.append({
                 'icon': '🚚',
-                'text': f"<b>{item['ngo_name'] or 'An NGO'}</b> is on the way to pick up {item['title']}",
-                'tag': 'En Route',
-                'color': '#2563eb',
-                'time': item['claimed_at'] or item['created_at']
+                'text': f"<b>{ngo_name or 'An NGO'}</b> is on the way to pick up {item['title']}",
+                'tag': 'En Route', 'color': '#2563eb', 'time': item.get('claimed_at') or item['created_at']
             })
-        elif item['ngo_name']:
+        elif ngo_name:
             events.append({
                 'icon': '📥',
-                'text': f"<b>{item['ngo_name']}</b> claimed <b>{item['title']}</b>",
-                'tag': 'Claimed',
-                'color': '#6366f1',
-                'time': item['claimed_at'] or item['created_at']
+                'text': f"<b>{ngo_name}</b> claimed <b>{item['title']}</b>",
+                'tag': 'Claimed', 'color': '#6366f1', 'time': item.get('claimed_at') or item['created_at']
             })
         else:
             events.append({
                 'icon': '❤️',
-                'text': f"<b>{item['donor_name']}</b> donated {item['title']} ({item['category']})",
-                'tag': 'New Donation',
-                'color': '#f43f5e',
-                'time': item['created_at']
+                'text': f"<b>{donor_name}</b> donated {item['title']} ({item.get('predicted_category')})",
+                'tag': 'New Donation', 'color': '#f43f5e', 'time': item['created_at']
             })
     return events
 
-# 🔔 USER NOTIFICATIONS (derived from donation state changes)
+# 🔔 USER NOTIFICATIONS
 def get_user_notifications(user_id):
-    """Derives unread-style notifications from a user's donation activity."""
-    conn = mysql.connector.connect(**db_config)
-    cur = conn.cursor(dictionary=True)
-    cur.execute("""
-        SELECT
-            d.id,
-            d.title,
-            d.pickup_status,
-            d.created_at,
-            dc.claimed_at,
-            n.org_name
-        FROM donations d
-        LEFT JOIN donation_claims dc ON d.id = dc.donation_id
-        LEFT JOIN ngos n ON dc.ngo_id = n.id
-        WHERE d.user_id = %s
-          AND (
-                dc.claimed_at IS NOT NULL
-                OR d.pickup_status IN ('Dispatched', 'Fulfilled')
-          )
-        ORDER BY COALESCE(dc.claimed_at, d.created_at) DESC
-        LIMIT 8
-    """, (user_id,))
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-
+    db = get_db()
     notifications = []
+    
+    # Derive from donations where status changed
+    rows = list(db.donations.find({
+        "user_id": str(user_id),
+        "$or": [{"claimed_by": {"$ne": None}}, {"pickup_status": {"$in": ["Dispatched", "Fulfilled"]}}]
+    }).sort("created_at", -1).limit(8))
+
     for row in rows:
+        ngo = db.ngos.find_one({"_id": ObjectId(row['claimed_by'])}) if row.get('claimed_by') else None
+        org_name = ngo['org_name'] if ngo else "An NGO"
+
         if row['pickup_status'] == 'Fulfilled':
-            notifications.append({
-                'icon': '🎉',
-                'title': 'Delivery Confirmed!',
-                'body': f"Your <b>{row['title']}</b> was successfully delivered.",
-                'color': '#10b981',
-                'donation_id': row['id'],
-                'time': str(row['claimed_at'] or row['created_at'])
-            })
+            notifications.append({'icon': '🎉', 'title': 'Delivery Confirmed!', 'body': f"Your <b>{row['title']}</b> was delivered.", 'color': '#10b981', 'donation_id': str(row['_id']), 'time': str(row.get('claimed_at') or row['created_at'])})
         elif row['pickup_status'] == 'Dispatched':
-            notifications.append({
-                'icon': '🚚',
-                'title': 'On The Way!',
-                'body': f"<b>{row['org_name'] or 'An NGO'}</b> is picking up your <b>{row['title']}</b>.",
-                'color': '#2563eb',
-                'donation_id': row['id'],
-                'time': str(row['claimed_at'] or row['created_at'])
-            })
-        elif row['org_name']:
-            notifications.append({
-                'icon': '📥',
-                'title': 'Donation Claimed!',
-                'body': f"<b>{row['org_name']}</b> has claimed your <b>{row['title']}</b>.",
-                'color': '#6366f1',
-                'donation_id': row['id'],
-                'time': str(row['claimed_at'] or row['created_at'])
-            })
+            notifications.append({'icon': '🚚', 'title': 'On The Way!', 'body': f"<b>{org_name}</b> is picking up your <b>{row['title']}</b>.", 'color': '#2563eb', 'donation_id': str(row['_id']), 'time': str(row.get('claimed_at') or row['created_at'])})
+        elif row.get('claimed_by'):
+            notifications.append({'icon': '📥', 'title': 'Donation Claimed!', 'body': f"<b>{org_name}</b> has claimed your <b>{row['title']}</b>.", 'color': '#6366f1', 'donation_id': str(row['_id']), 'time': str(row.get('claimed_at') or row['created_at'])})
+            
     return notifications
+
+# --- MYSQL CODE (COMMENTED) ---
+"""
+# def get_all_donations_mysql():
+#     conn = mysql.connector.connect(**db_config)
+#     ...
+"""

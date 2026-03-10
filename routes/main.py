@@ -1,16 +1,26 @@
 import os
+import cloudinary
+import cloudinary.uploader
+from Config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from markupsafe import Markup
+
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True
+)
 from routes.email_utils import (
     send_claimed_notification,
     send_dispatched_notification,
     send_fulfilled_notification
 )
 
-
-from db.database import get_db_connection
+# from db.database import get_db_connection
 from models.ngo_models import register_ngo, get_ngo_profile
 from ai_model.predictor import predict_category, predict_impact
 from models.pickup_recommender import should_recommend_pickup
@@ -42,6 +52,36 @@ UPLOAD_FOLDER = os.path.join('static', 'uploads')
 @main.route('/_init_db')
 def initialize_database():
     try:
+        from db.database import get_db
+        db = get_db()
+        
+        # --- MONGODB INITIALIZATION ---
+        # 1. Create Indexes
+        db.users.create_index("email", unique=True)
+        db.admins.create_index("email", unique=True)
+        db.ngos.create_index("contact_email", unique=True)
+        
+        # 2. Create Default Admin if not exists
+        if not db.admins.find_one({"email": "admin@donatewise.com"}):
+            from werkzeug.security import generate_password_hash
+            hashed = generate_password_hash('admin123')
+            db.admins.insert_one({
+                "name": "Admin", 
+                "email": "admin@donatewise.com", 
+                "password_hash": hashed, 
+                "role": "admin"
+            })
+            
+        return "✅ MongoDB initialized successfully (indexes created, admin user ensured)."
+
+    except Exception as e:
+        return f"❌ Initialization failed: {e}"
+
+"""
+@main.route('/_init_db_mysql')
+def initialize_database_mysql():
+    try:
+        from db.database import get_db_connection
         conn = get_db_connection()
         cur = conn.cursor()
         
@@ -55,14 +95,15 @@ def initialize_database():
         
         cur.execute("CREATE TABLE IF NOT EXISTS donation_claims (id INT AUTO_INCREMENT PRIMARY KEY, donation_id INT, ngo_id INT, pickup_time DATETIME, status VARCHAR(20) DEFAULT 'claimed', FOREIGN KEY (donation_id) REFERENCES donations(id), FOREIGN KEY (ngo_id) REFERENCES users(id))")
         
-        cur.execute("CREATE TABLE IF NOT EXISTS ngos (id INT PRIMARY KEY, org_name VARCHAR(200), address TEXT, license_no VARCHAR(50), status VARCHAR(20) DEFAULT 'pending', FOREIGN KEY (id) REFERENCES users(id))")
+        cur.execute("CREATE TABLE IF NOT EXISTS ngos (id INT PRIMARY KEY, org_name VARCHAR(200), location VARCHAR(255), license_no VARCHAR(50), status VARCHAR(20) DEFAULT 'pending', FOREIGN KEY (id) REFERENCES users(id))")
 
         conn.commit()
         cur.close()
         conn.close()
-        return "✅ Local database initialized successfully."
+        return "✅ Local MySQL database initialized successfully."
     except Exception as e:
         return f"❌ Initialization failed: {e}"
+"""
 
 @main.route('/')
 def index():
@@ -107,10 +148,51 @@ def profile():
     stats = get_donor_profile_stats(user_id)
     badges = get_donor_badges(stats)
     
+    user_id = session['user_id']
+    stats = get_donor_profile_stats(user_id)
+    badges = get_donor_badges(stats)
+    
+    # --- MONGODB IMPLEMENTATION ---
+    from db.database import get_db
+    from bson import ObjectId
+    db = get_db()
+    
+    # Fetch recent history with NGO info
+    recent_cursor = db.donations.aggregate([
+        {"$match": {"user_id": user_id}},
+        {"$sort": {"created_at": -1}},
+        {"$limit": 5},
+        {
+            "$lookup": {
+                "from": "ngos",
+                "let": {"claimed_by_id": "$claimed_by"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": [{"$toString": "$_id"}, "$$claimed_by_id"]}}}
+                ],
+                "as": "ngo_info"
+            }
+        },
+        {
+            "$project": {
+                "id": {"$toString": "$_id"},
+                "title": 1,
+                "predicted_category": 1,
+                "quantity": 1,
+                "pickup_status": 1,
+                "created_at": 1,
+                "location": 1,
+                "image_filename": 1,
+                "ngo_name": {"$arrayElemAt": ["$ngo_info.org_name", 0]}
+            }
+        }
+    ])
+    recent = list(recent_cursor)
+
+    """
     # Get recent history for the feed
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
-    cur.execute("""
+    cur.execute(\"\"\"
         SELECT d.id, d.title, d.predicted_category, d.quantity, 
                d.pickup_status, d.created_at, d.location, d.image_filename,
                n.org_name as ngo_name
@@ -120,10 +202,11 @@ def profile():
         WHERE d.user_id = %s
         ORDER BY d.created_at DESC
         LIMIT 5
-    """, (user_id,))
+    \"\"\", (user_id,))
     recent = cur.fetchall()
     cur.close()
     conn.close()
+    """
     
     return render_template('profile.html',
                            user_name=session.get('name', 'Donor'),
@@ -159,12 +242,21 @@ def dashboard():
     stats = get_category_stats()
     donations = get_all_donations()
     
+    # --- MONGODB IMPLEMENTATION ---
+    from db.database import get_db
+    db = get_db()
+    pending_ngos = list(db.ngos.find({"status": "Pending"}))
+    for ngo in pending_ngos:
+        ngo['id'] = str(ngo['_id'])
+
+    """
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
     cur.execute("SELECT * FROM ngos WHERE TRIM(LOWER(status)) = 'pending'")
     pending_ngos = cur.fetchall()
     cur.close()
     conn.close()
+    """
 
     for d in donations:
         d['pickup_recommended'] = False
@@ -188,14 +280,27 @@ def donate():
         pickup_time = request.form.get('pickup_time') or None
 
         image_file = request.files.get('image')
-        image_filename = None
+        image_url = None
         visual_hint = ""
         
         if image_file and image_file.filename:
             filename = secure_filename(image_file.filename)
-            save_path = os.path.join(UPLOAD_FOLDER, filename)
-            image_file.save(save_path)
-            image_filename = filename
+            
+            # ☁️ Attempt Cloudinary Upload (Recommended for Vercel)
+            if CLOUDINARY_API_KEY:
+                try:
+                    upload_result = cloudinary.uploader.upload(image_file, folder="donatewise")
+                    image_url = upload_result.get('secure_url')
+                    print(f"☁️ Cloudinary upload successful: {image_url}")
+                except Exception as e:
+                    print(f"❌ Cloudinary upload failed: {e}")
+            
+            # 📂 Fallback to local storage (if Cloudinary fails or is not configured)
+            if not image_url:
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                save_path = os.path.join(UPLOAD_FOLDER, filename)
+                image_file.save(save_path)
+                image_url = filename # Storing just filename for local
             
             # 🔍 'Vision-Lite' Heuristic: Extract keywords from filename for better accuracy
             # This makes the AI feel much smarter when text descriptions are missing
@@ -215,9 +320,9 @@ def donate():
                     break
 
         # If title is empty, use a generic placeholder for the DB
-        if not title and image_filename:
+        if not title and image_url:
             title = "Image-based Donation"
-        if not description and image_filename:
+        if not description and image_url:
             description = "No description provided."
 
         # Combine text and visual hints for the predictor
@@ -234,7 +339,7 @@ def donate():
             'predicted_category': impact['category'],
             'ai_condition': impact['condition'],
             'ai_confidence': impact['confidence'],
-            'image_filename': image_filename,
+            'image_filename': image_url,
             'pickup_required': pickup_required,
             'pickup_time': pickup_time,
             'pickup_status': 'Pending',
@@ -327,11 +432,52 @@ def history():
         return redirect(url_for('auth.login'))
     
     user_id = session['user_id']
+    
+    # --- MONGODB IMPLEMENTATION ---
+    from db.database import get_db
+    db = get_db()
+    
+    # Fetch user donations with claim info if available
+    history_cursor = db.donations.aggregate([
+        {"$match": {"user_id": user_id}},
+        {"$sort": {"created_at": -1}},
+        {
+            "$lookup": {
+                "from": "ngos",
+                "let": {"claimed_by_id": "$claimed_by"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": [{"$toString": "$_id"}, "$$claimed_by_id"]}}}
+                ],
+                "as": "ngo_info"
+            }
+        },
+        {
+            "$project": {
+                "id": {"$toString": "$_id"},
+                "title": 1,
+                "description": 1,
+                "predicted_category": 1,
+                "quantity": 1,
+                "pickup_status": 1,
+                "created_at": 1,
+                "location": 1,
+                "image_filename": 1,
+                "claimed_by": 1,
+                "pickup_required": 1,
+                "pickup_time": 1,
+                "ngo_name": {"$arrayElemAt": ["$ngo_info.org_name", 0]},
+                "ngo_location": {"$arrayElemAt": ["$ngo_info.location", 0]}
+            }
+        }
+    ])
+    history_data = list(history_cursor)
+    
+    """
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
     
     # Fetch user donations with claim info if available
-    query = """
+    query = \"\"\"
         SELECT d.*, n.org_name as ngo_name, n.location as ngo_location, 
                dc.pickup_time as scheduled_time, 
                dc.status as claim_status, dc.pickup_notes
@@ -340,17 +486,18 @@ def history():
         LEFT JOIN ngos n ON dc.ngo_id = n.id
         WHERE d.user_id = %s
         ORDER BY d.created_at DESC
-    """
+    \"\"\"
     cur.execute(query, (user_id,))
     history_data = cur.fetchall()
+    """
     
     # Calculate stats for the impact summary
     total_donations = len(history_data)
-    claimed_count = sum(1 for d in history_data if d['claimed_by'])
+    claimed_count = sum(1 for d in history_data if d.get('claimed_by'))
     pending_count = total_donations - claimed_count
 
-    cur.close()
-    conn.close()
+    # cur.close()
+    # conn.close()
     
     return render_template('history.html', 
                            history=history_data, 
@@ -360,25 +507,69 @@ def history():
                                'pending': pending_count
                            })
 
-@main.route('/certificate/<int:donation_id>')
+@main.route('/certificate/<string:donation_id>')
 def view_certificate(donation_id):
     if not session.get('user_id'):
         return redirect(url_for('auth.login'))
     
+    # --- MONGODB IMPLEMENTATION ---
+    from db.database import get_db
+    from bson import ObjectId
+    db = get_db()
+    
+    # Securely fetch only if it belongs to the user and is FULFILLED
+    donation_cursor = db.donations.aggregate([
+        {"$match": {"_id": ObjectId(donation_id), "user_id": str(session['user_id']), "pickup_status": "Fulfilled"}},
+        {
+            "$lookup": {
+                "from": "users",
+                "let": {"user_id_str": "$user_id"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": [{"$toString": "$_id"}, "$$user_id_str"]}}}
+                ],
+                "as": "user_info"
+            }
+        },
+        {
+            "$lookup": {
+                "from": "ngos",
+                "let": {"claimed_by_id": "$claimed_by"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": [{"$toString": "$_id"}, "$$claimed_by_id"]}}}
+                ],
+                "as": "ngo_info"
+            }
+        },
+        {
+            "$project": {
+                "id": {"$toString": "$_id"},
+                "donor_name": {"$arrayElemAt": ["$user_info.name", 0]},
+                "ngo_name": {"$arrayElemAt": ["$ngo_info.org_name", 0]},
+                "title": 1,
+                "created_at": 1,
+                "quantity": 1,
+                "predicted_category": 1
+            }
+        }
+    ])
+    donation = next(donation_cursor, None)
+
+    """
     # Securely fetch only if it belongs to the user and is FULFILLED
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
-    cur.execute("""
+    cur.execute(\"\"\"
         SELECT d.*, u.name as donor_name, n.org_name as ngo_name
         FROM donations d
         JOIN users u ON d.user_id = u.id
         LEFT JOIN donation_claims dc ON d.id = dc.donation_id
         LEFT JOIN ngos n ON dc.ngo_id = n.id
         WHERE d.id = %s AND d.user_id = %s AND d.pickup_status = 'Fulfilled'
-    """, (donation_id, session['user_id']))
+    \"\"\", (donation_id, session['user_id']))
     donation = cur.fetchone()
     cur.close()
     conn.close()
+    \"\"\"
     
     if not donation:
         flash("Certificate not available yet. Impact must be verified first!")
@@ -464,20 +655,25 @@ def claim_donation():
         flash("⚠️ Pickup time is required to claim.")
         return redirect(url_for('main.ngo_dashboard'))
 
+    # --- MONGODB IMPLEMENTATION ---
+    mark_donation_claimed(donation_id, session['ngo_id'], pickup_time, pickup_notes)
+    
+    """
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("""
+    cur.execute(\"\"\"
         INSERT INTO donation_claims (donation_id, ngo_id, pickup_time, pickup_notes, status)
         VALUES (%s, %s, %s, %s, %s)
-    """, (donation_id, session['ngo_id'], pickup_time, pickup_notes, 'Scheduled'))
+    \"\"\", (donation_id, session['ngo_id'], pickup_time, pickup_notes, 'Scheduled'))
 
-    cur.execute("""
+    cur.execute(\"\"\"
         UPDATE donations SET claimed_by = %s WHERE id = %s
-    """, (session['ngo_id'], donation_id))
+    \"\"\", (session['ngo_id'], donation_id))
 
     conn.commit()
     cur.close()
     conn.close()
+    \"\"\"
 
     ngo_name = ngo.get('org_name') or 'your NGO'
     notify_donor(donation_id, pickup_time, ngo_name)
@@ -535,6 +731,15 @@ def ngo_profile():
 
     ngo_id = session['ngo_id']
 
+    # --- MONGODB IMPLEMENTATION ---
+    from db.database import get_db
+    from bson import ObjectId
+    db = get_db()
+    ngo = db.ngos.find_one({"_id": ObjectId(ngo_id)})
+    if ngo:
+        ngo['id'] = str(ngo['_id'])
+
+    """
     # ✅ Always fetch latest profile directly from DB
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
@@ -542,6 +747,7 @@ def ngo_profile():
     ngo = cur.fetchone()
     cur.close()
     conn.close()
+    """
 
     if not ngo:
         flash("⚠️ NGO profile not found.")
@@ -574,7 +780,7 @@ def post_ngo_need():
     flash("✅ Urgent requirement posted successfully!")
     return redirect(url_for('main.ngo_needs'))
 
-@main.route('/ngo/delete-need/<int:need_id>', methods=['POST'])
+@main.route('/ngo/delete-need/<string:need_id>', methods=['POST'])
 def delete_ngo_need(need_id):
     if not session.get('ngo_id'):
         return redirect(url_for('auth.login'))
@@ -606,26 +812,34 @@ def register_ngo_route():
         hashed_password = generate_password_hash(password)
 
         try:
+            # --- MONGODB IMPLEMENTATION ---
+            register_ngo(org_name, contact_email, location, mission, hashed_password)
+            flash("✅ NGO registration successful! Awaiting admin approval. Please log in.")
+            return redirect(url_for('auth.ngo_login'))
+
+            """
             conn = None
             cur = None
             conn = get_db_connection()
             cur = conn.cursor()
-            cur.execute("""
+            cur.execute(\"\"\"
                 INSERT INTO ngos (org_name, contact_email, location, mission, password_hash, status)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (org_name, contact_email, location, mission, hashed_password, 'Pending'))
+            \"\"\", (org_name, contact_email, location, mission, hashed_password, 'Pending'))
             conn.commit()
             flash("✅ NGO registration successful! Awaiting admin approval. Please log in.")
             return redirect(url_for('auth.ngo_login'))
+            \"\"\"
 
         except Exception as e:
             print("❌ NGO registration failed:", e)
             flash("An error occurred during registration. Please try again.")
 
         finally:
-            if cur:
-                cur.close()
-            if conn:
-                conn.close()
+            pass
+            # if cur:
+            #     cur.close()
+            # if conn:
+            #     conn.close()
 
     return render_template('ngo_register.html')

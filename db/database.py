@@ -1,19 +1,21 @@
-import mysql.connector
-from Config import db_config
+# import mysql.connector
+# from Config import db_config
+from pymongo import MongoClient
+from Config import MONGO_URI, MONGO_DB_NAME
 
-#🔌 Establish connection
+# --- MONGODB SETUP (ACTIVE) ---
+client = MongoClient(MONGO_URI)
+db = client[MONGO_DB_NAME]
+
+def get_db():
+    """Returns the MongoDB database instance."""
+    return db
+
+# --- MYSQL SETUP (COMMENTED OUT AS REQUESTED) ---
+"""
 def get_db_connection():
     return mysql.connector.connect(**db_config)
-# def get_db_connection():
-#     return mysql.connector.connect(
-#         host="yamanote.proxy.rlwy.net",
-#         port=12682,
-#         user="root",
-#         password="VzRIoNlmOHRYWYEBoWEzVoRqceYdojoQ",
-#         database="donation"
-#     )
 
-# 🧠 Execute query (SELECT / INSERT / UPDATE / DELETE)
 def execute_query(query, params=None):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -34,3 +36,4 @@ def execute_query(query, params=None):
         conn.close()
 
     return result
+"""

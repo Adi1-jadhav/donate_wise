@@ -24,5 +24,5 @@ CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
 CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
 
 # 📧 Email Configuration
-# EMAIL_USER = os.getenv('EMAIL_USER', 'adityajadhav3117@gmail.com')
-# EMAIL_PASS = os.getenv('EMAIL_PASS', '') 
+EMAIL_USER = os.getenv('EMAIL_USER', 'adityajadhav3117@gmail.com')
+EMAIL_PASS = os.getenv('EMAIL_PASS', '') 

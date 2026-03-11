@@ -285,7 +285,7 @@
                     </div>
                     <div class="col-6">
                         <p><i class="bi bi-clock-fill text-warning me-1"></i><strong>Time:</strong> <br>{{
-                            d.created_at.strftime('%Y-%m-%d %H:%M') if d.created_at else '' }}</p>
+                            d.created_at[:16] if d.created_at else '' }}</p>
                     </div>
                 </div>
 

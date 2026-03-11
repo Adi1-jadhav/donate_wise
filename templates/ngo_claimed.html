@@ -59,14 +59,19 @@
                         </div>
 
                         {% if d.image_filename %}
+                        {% if d.image_filename.startswith('http') %}
+                        <img src="{{ d.image_filename }}"
+                            class="img-fluid rounded-3 mb-4 shadow-sm border"
+                            style="height:150px; width:100%; object-fit:cover;">
+                        {% else %}
                         <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) }}"
                             class="img-fluid rounded-3 mb-4 shadow-sm border"
                             style="height:150px; width:100%; object-fit:cover;">
                         {% endif %}
+                        {% endif %}
 
                         <div class="d-flex flex-wrap gap-2 mt-auto align-items-center">
-                            {% if d.pickup_status == 'Approved' or d.pickup_status == 'pending' or d.pickup_status ==
-                            'Pending' %}
+                            {% if d.pickup_status in ['Approved', 'pending', 'Pending', 'Claimed', 'Claim'] %}
                             <form action="{{ url_for('main.dispatch_donation_route') }}" method="POST"
                                 class="flex-grow-1">
                                 <input type="hidden" name="donation_id" value="{{ d.id }}">
@@ -82,9 +87,13 @@
                                     <i class="bi bi-check-circle me-2"></i> Mark as Delivered
                                 </button>
                             </form>
-                            {% else %}
+                            {% elif d.pickup_status == 'Fulfilled' %}
                             <div class="alert alert-success w-100 text-center py-2 m-0 rounded-pill fw-bold border-0">
                                 <i class="bi bi-balloon-heart-fill me-2"></i> Mission Accomplished
+                            </div>
+                            {% else %}
+                            <div class="alert alert-secondary w-100 text-center py-2 m-0 rounded-pill fw-bold border-0">
+                                <i class="bi bi-hourglass-split me-2"></i> Status: {{ d.pickup_status }}
                             </div>
                             {% endif %}
                         </div>

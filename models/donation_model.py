@@ -116,11 +116,17 @@ def get_claimed_donations(ngo_id):
     return claimed
 
 # 📍 Mark Donation as Claimed
-def mark_donation_claimed(donation_id, ngo_id):
+def mark_donation_claimed(donation_id, ngo_id, pickup_time=None, pickup_notes=None):
     db = get_db()
     db.donations.update_one(
         {"_id": ObjectId(donation_id)},
-        {"$set": {"claimed_by": str(ngo_id), "claimed_at": datetime.now()}}
+        {"$set": {
+            "claimed_by": str(ngo_id), 
+            "claimed_at": datetime.now(),
+            "scheduled_pickup_time": pickup_time,
+            "pickup_notes": pickup_notes,
+            "pickup_status": "Claimed"
+        }}
     )
 
 def mark_donation_fulfilled(donation_id):

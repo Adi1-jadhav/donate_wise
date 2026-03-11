@@ -80,6 +80,9 @@ def get_unclaimed_donations():
     
     for d in records:
         d['id'] = str(d['_id'])
+        del d['_id']
+        if 'created_at' in d: d['created_at'] = str(d['created_at'])
+        if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
         user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
         d['user_name'] = user['name'] if user else "Donor"
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
@@ -199,6 +202,9 @@ def get_recent_map_data():
     ).sort("created_at", -1).limit(15))
     
     for d in map_data:
+        d['id'] = str(d['_id'])
+        del d['_id']
+        if 'created_at' in d: d['created_at'] = str(d['created_at'])
         d['category'] = d.get('predicted_category')
         d['status'] = d.get('pickup_status')
     return map_data

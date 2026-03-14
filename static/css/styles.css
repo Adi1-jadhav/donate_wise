@@ -22,19 +22,44 @@ a:hover {
 
 /* 🧭 Navbar */
 .navbar {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  background: white;
+  padding: 0.8rem 0;
+  transition: all 0.3s ease;
 }
 
 .navbar-brand {
-  font-weight: 600;
+  font-weight: 700;
+  color: #007BFF !important;
 }
 
 .nav-link {
-  margin-right: 1rem;
+  font-weight: 500;
+  color: #6c757d !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
-.nav-link:hover {
-  text-decoration: underline;
+.nav-link:hover, .nav-link.active {
+  color: #007BFF !important;
+  background: rgba(0, 123, 255, 0.05);
+  text-decoration: none;
+}
+
+.active-link {
+  color: #007BFF !important;
+  background: rgba(0, 123, 255, 0.1) !important;
+}
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: white;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
 }
 
 /* 🧾 Forms & Filters */
@@ -91,14 +116,20 @@ button,
 
 /* 🧩 Donation Card Style */
 .card {
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  border: none;
-  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+  border-radius: 1rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 }
 
 .donation-card {
   cursor: pointer;
-  transition: box-shadow 0.2s ease-in-out;
+  background: white;
 }
 
 .donation-card:hover {

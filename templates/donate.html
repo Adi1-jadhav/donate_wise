@@ -50,7 +50,7 @@
         .page-wrap {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 3rem 1.5rem 5rem;
+            padding: 1.5rem 1rem 3rem;
             display: grid;
             grid-template-columns: 1fr 380px;
             gap: 2rem;
@@ -523,16 +523,34 @@
                 style="font-size:1.4rem; letter-spacing:-0.5px;">
                 <i class="bi bi-box2-heart-fill"></i> DonateWise
             </a>
-            <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="{{ url_for('main.home') }}"
-                    class="btn btn-sm btn-light rounded-pill px-3 fw-semibold text-muted"><i
-                        class="bi bi-house me-1"></i>Home</a>
-                <a href="{{ url_for('main.history') }}"
-                    class="btn btn-sm btn-light rounded-pill px-3 fw-semibold text-muted"><i
-                        class="bi bi-clock-history me-1"></i>History</a>
-                <a href="{{ url_for('main.profile') }}"
-                    class="btn btn-sm btn-light rounded-pill px-3 fw-semibold text-muted"><i
-                        class="bi bi-person-circle me-1"></i>Profile</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-center gap-1">
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.home') }}" class="nav-link fw-semibold text-muted">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.history') }}" class="nav-link fw-semibold text-muted">
+                            <i class="bi bi-clock-history me-1"></i>History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.profile') }}" class="nav-link fw-semibold text-muted">
+                            <i class="bi bi-person-circle me-1"></i>Profile
+                        </a>
+                    </li>
+                    {% if session.get('user_id') or session.get('ngo_id') %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-lg-2 fw-semibold">
+                            Logout
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>

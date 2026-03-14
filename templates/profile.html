@@ -306,19 +306,39 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.home') }}" style="font-size:1.3rem;">
                 <i class="bi bi-box2-heart-fill"></i> DonateWise
             </a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <a href="{{ url_for('main.home') }}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i
-                        class="bi bi-house me-1"></i>Home</a>
-                <a href="{{ url_for('main.donate') }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold"><i
-                        class="bi bi-plus me-1"></i>Donate</a>
-                <a href="{{ url_for('main.history') }}"
-                    class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold"><i
-                        class="bi bi-clock-history me-1"></i>History</a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-center gap-1">
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.home') }}" class="nav-link fw-semibold text-muted">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.donate') }}" class="nav-link fw-semibold text-muted text-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Donate
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.history') }}" class="nav-link fw-semibold text-muted">
+                            <i class="bi bi-clock-history me-1"></i>History
+                        </a>
+                    </li>
+                    {% if session.get('user_id') or session.get('ngo_id') %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-lg-2 fw-semibold">
+                            Logout
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>

@@ -30,19 +30,19 @@ a:hover {
 
 .navbar-brand {
   font-weight: 700;
-  color: #007BFF !important;
+  color: #007BFF;
 }
 
 .nav-link {
   font-weight: 500;
-  color: #6c757d !important;
-  padding: 0.5rem 1rem !important;
+  color: #6c757d;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.2s;
 }
 
 .nav-link:hover, .nav-link.active {
-  color: #007BFF !important;
+  color: #007BFF;
   background: rgba(0, 123, 255, 0.05);
   text-decoration: none;
 }

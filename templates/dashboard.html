@@ -16,8 +16,7 @@
         }
 
         .navbar {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .navbar-brand {
@@ -193,22 +192,21 @@
 <body>
 
     <!-- 🌐 Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="bi bi-box2-heart-fill me-2"></i>DonateWise Admin</a>
+            <a class="navbar-brand" href="{{ url_for('main.home') }}"><i class="bi bi-box2-heart-fill me-2"></i>DonateWise
+                Admin</a>
             <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav ms-auto fw-semibold">
-                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.donate') }}">Donate</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('main.history') }}">History</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.donate') }}">Donate</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.history') }}">History</a></li>
                     {% if session.get('user_id') %}
-                    <li class="nav-item"><a class="nav-link text-white bg-white bg-opacity-25 rounded px-3 py-2 ms-2"
+                    <li class="nav-item"><a class="nav-link btn btn-outline-primary border-2 px-3 py-1 ms-lg-3 mt-2 mt-lg-0"
                             href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>

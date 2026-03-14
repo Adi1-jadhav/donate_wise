@@ -28,22 +28,39 @@ a:hover {
   transition: all 0.3s ease;
 }
 
+.navbar .container {
+  display: flex;
+  align-items: center;
+}
+
 .navbar-brand {
-  font-weight: 700;
+  font-weight: 800;
   color: #007BFF;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.navbar-nav {
+  align-items: center;
 }
 
 .nav-link {
-  font-weight: 500;
-  color: #6c757d;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: all 0.2s;
+  font-weight: 600;
+  color: #4b5563;
+  padding: 0.5rem 1.25rem;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
 }
 
 .nav-link:hover, .nav-link.active {
   color: #007BFF;
-  background: rgba(0, 123, 255, 0.05);
+  background: rgba(0, 123, 255, 0.08);
   text-decoration: none;
 }
 
@@ -255,4 +272,31 @@ section h3 {
   select.form-select {
     width: 100%;
   }
+}
+/* 🚀 Professional Button Overrides */
+.navbar .btn-outline-primary {
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.4rem 1.5rem !important;
+    border-width: 2px;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #007BFF;
+    border-color: #007BFF;
+}
+
+.navbar .btn-outline-primary:hover {
+    background: #007BFF;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.nav-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    margin-left: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }

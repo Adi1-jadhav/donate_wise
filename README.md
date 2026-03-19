@@ -4,7 +4,7 @@
 
 DonateWise is a full-stack donation management system that seamlessly connects generous donors with verified NGOs. It features AI-powered auto-categorization of donations, smart pickup recommendations, dynamic live tracking, and beautiful HTML email notifications to ensure transparency and efficiency in charitable logistics.
 
----
+--- 
 
 ## ✨ Features
 

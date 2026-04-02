@@ -33,9 +33,8 @@ def _send_impl(to_email, subject, html_body):
 
 
 def _send(to_email, subject, html_body):
-    """Starts a background thread to send the email."""
-    t = threading.Thread(target=_send_impl, args=(to_email, subject, html_body))
-    t.start()
+    """Sends the email synchronously for serverless compatibility."""
+    _send_impl(to_email, subject, html_body)
 
 
 def _base_template(icon, title, subtitle, body_rows, cta_text=None, cta_link=None, color='#4f46e5'):

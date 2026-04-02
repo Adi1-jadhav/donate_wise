@@ -146,9 +146,17 @@ def mark_donation_dispatched(donation_id):
 # 📧 Get Donor Info by Donation — used for notifications
 def get_donor_by_donation_id(donation_id):
     db = get_db()
-    donation = db.donations.find_one({"_id": ObjectId(donation_id)})
+    try:
+        donation = db.donations.find_one({"_id": ObjectId(donation_id)})
+    except Exception:
+        return None
+        
     if donation:
-        user = db.users.find_one({"_id": ObjectId(donation['user_id'])})
+        try:
+            user = db.users.find_one({"_id": ObjectId(donation['user_id'])})
+        except Exception:
+            user = None
+            
         if user:
             return {
                 "id": str(user['_id']),

@@ -36,7 +36,9 @@ def get_ngo_profile(ngo_id):
             ngo['id'] = str(ngo['_id'])
         return ngo
     except:
+        
         return None
+        
 
 """
 def get_ngo_profile_mysql(ngo_id):
@@ -47,6 +49,7 @@ def get_ngo_profile_mysql(ngo_id):
     cur.close()
     conn.close()
     return ngo
+
 """
 
 def get_all_ngos():
@@ -74,6 +77,7 @@ def get_ngo_by_email(email):
         ngo['id'] = str(ngo['_id'])
     return ngo
 
+
 """
 def get_ngo_by_email_mysql(email):
     conn = get_db_connection()
@@ -83,5 +87,7 @@ def get_ngo_by_email_mysql(email):
     cur.close()
     conn.close()
     return ngo
+
+
 """
 

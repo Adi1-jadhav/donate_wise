@@ -513,11 +513,18 @@ def view_certificate(donation_id):
     # --- MONGODB IMPLEMENTATION ---
     from db.database import get_db
     from bson import ObjectId
+    from bson.errors import InvalidId
     db = get_db()
+    
+    try:
+        don_id_obj = ObjectId(donation_id)
+    except InvalidId:
+        flash("Invalid Certificate ID.")
+        return redirect(url_for('main.history'))
     
     # Securely fetch only if it belongs to the user and is FULFILLED
     donation_cursor = db.donations.aggregate([
-        {"$match": {"_id": ObjectId(donation_id), "user_id": str(session['user_id']), "pickup_status": "Fulfilled"}},
+        {"$match": {"_id": don_id_obj, "user_id": str(session['user_id']), "pickup_status": "Fulfilled"}},
         {
             "$lookup": {
                 "from": "users",
@@ -571,6 +578,9 @@ def view_certificate(donation_id):
     if not donation:
         flash("Certificate not available yet. Impact must be verified first!")
         return redirect(url_for('main.history'))
+        
+    if donation.get('created_at'):
+        donation['created_at'] = str(donation['created_at'])
         
     return render_template('certificate.html', donation=donation)
 

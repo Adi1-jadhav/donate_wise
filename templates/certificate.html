@@ -212,7 +212,7 @@
                 </div>
 
                 <div class="signature-box">
-                    <p class="mb-0">DATE: {{ donation.created_at[:10] if donation.created_at else '' }}</p>
+                    <p class="mb-0">DATE: {{ (donation.created_at|string)[:10] if donation.created_at else '' }}</p>
                     <small class="text-muted">Impact Code: #DW-{{ donation.id }}</small>
                 </div>
             </div>

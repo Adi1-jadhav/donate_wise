@@ -131,6 +131,16 @@
         .fade-in { animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 📡 SENSORS PULSE */
+        @keyframes sensors-glow {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .pulse-pro {
+            animation: sensors-glow 2s infinite;
+        }
+
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(8px); padding: 0.75rem 0; }
             .navbar-collapse { background: white !important; margin-top: 1rem; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
@@ -250,7 +260,7 @@
                     <p class="text-muted small">Real-time donation density in {{ ngo.location }}</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-bold">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-bold pulse-pro">
                         <i class="bi bi-broadcast pulse me-2"></i>SENSORS ACTIVE
                     </span>
                 </div>
@@ -309,7 +319,7 @@
                         {% else %}
                         <a href="{{ url_for('main.ngo_claimed') }}" class="btn btn-outline-success btn-pro-sm w-100">View Tracking</a>
                         {% endif %}
-                        <button class="btn btn-light btn-pro-sm w-100 text-muted" onclick="this.closest('.dispatch-card').querySelector('.details').classList.toggle('d-block');">Details</button>
+                        <button class="btn btn-light btn-pro-sm w-100 text-muted" onclick="this.closest('.dispatch-card').querySelector('.details').classList.toggle('d-none');">Details</button>
                     </div>
 
                     <!-- Details Area (Expanded) -->
@@ -362,7 +372,7 @@
         // Radar Map
         const ngoBasePos = [18.5204, 73.8567]; // Mock for Pune
         const map = L.map('radarMap', { zoomControl: false }).setView(ngoBasePos, 12);
-        L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
         const baseIcon = L.divIcon({
             html: '<i class="bi bi-pin-map-fill text-primary" style="font-size: 2.5rem;"></i>',

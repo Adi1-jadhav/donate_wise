@@ -92,6 +92,7 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
+            flex-wrap: wrap;
         }
         .dispatch-ticket:hover {
             transform: translateX(8px);
@@ -123,7 +124,7 @@
 
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(8px); padding: 0.75rem 0; }
-            .navbar-collapse { background: white !important; margin-top: 1rem; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+            .navbar-collapse { background: white !important; margin-top: 1rem; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             .navbar-collapse.show { display: block !important; }
             .nav-link-pro { width: 100%; padding: 12px 20px; border-radius: 12px; margin-bottom: 8px; display: block; }
 
@@ -243,26 +244,59 @@
                     </div>
                 </div>
 
-                <div class="ticket-actions">
-                    {% if d.pickup_status in ['Approved', 'pending', 'Pending', 'Claimed', 'Claim'] %}
-                    <form action="{{ url_for('main.dispatch_donation_route') }}" method="POST">
-                        <input type="hidden" name="donation_id" value="{{ d.id }}">
-                        <button type="submit" class="btn btn-pro btn-primary w-100 shadow-sm">
-                            <i class="bi bi-truck me-2"></i> START JOURNEY
-                        </button>
-                    </form>
-                    {% elif d.pickup_status == 'Dispatched' %}
-                    <form action="{{ url_for('main.fulfill_donation_route') }}" method="POST">
-                        <input type="hidden" name="donation_id" value="{{ d.id }}">
-                        <button type="submit" class="btn btn-pro btn-success w-100 shadow-sm">
-                            <i class="bi bi-check-all me-2"></i> MARK DELIVERED
-                        </button>
-                    </form>
-                    {% elif d.pickup_status == 'Fulfilled' %}
-                    <div class="text-success fw-bold text-center">
-                        <i class="bi bi-balloon-heart-fill me-1"></i> Mission Success
-                    </div>
                     {% endif %}
+                    <button class="btn btn-light btn-sm rounded-pill fw-bold" onclick="this.closest('.dispatch-ticket').querySelector('.details-panel').classList.toggle('d-none');">
+                        <i class="bi bi-info-circle me-1"></i> Details
+                    </button>
+                </div>
+
+                <!-- 🧩 EXPANDED DETAILS PANEL -->
+                <div class="details-panel d-none w-100 mt-4 pt-4" style="border-top: 1px dashed #e2e8f0;">
+                    <div class="row g-4">
+                        {% if d.image_filename %}
+                        <div class="col-lg-4">
+                            <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) if d.image_filename and not d.image_filename.startswith('http') else d.image_filename }}" 
+                                 class="img-fluid rounded-4 shadow-sm" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="col-lg-8">
+                        {% else %}
+                        <div class="col-12">
+                        {% endif %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 bg-light border">
+                                        <div class="small fw-bold text-muted text-uppercase mb-1">Item Category</div>
+                                        <div class="fw-bold text-dark">{{ d.predicted_category }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 bg-light border">
+                                        <div class="small fw-bold text-muted text-uppercase mb-1">Quantity</div>
+                                        <div class="fw-bold text-dark">{{ d.quantity }} Units</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="p-3 rounded-4 bg-light border">
+                                        <div class="small fw-bold text-muted text-uppercase mb-1">📍 Exact Location</div>
+                                        <div class="fw-bold text-dark">{{ d.location }}</div>
+                                    </div>
+                                </div>
+                                {% if d.description %}
+                                <div class="col-12">
+                                    <div class="p-3 rounded-4 bg-light border">
+                                        <div class="small fw-bold text-muted text-uppercase mb-1">📝 Mission Notes</div>
+                                        <div class="text-secondary small">{{ d.description }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 rounded-4 overflow-hidden border">
+                        <iframe width="100%" height="250" frameborder="0" style="display:block;"
+                            src="https://maps.google.com/maps?q={{ d.location | urlencode }}&output=embed&z=15"
+                            loading="lazy"></iframe>
+                    </div>
                 </div>
             </div>
             {% endfor %}

@@ -174,24 +174,6 @@
             margin-bottom: 0; line-height: 1;
         }
 
-        /* 🎫 TICKETS */
-        .rescue-ticket {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px; padding: 2rem;
-            height: 100%; position: relative;
-            display: flex; flex-direction: column; gap: 1.5rem;
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            opacity: 0;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .section-label {
             color: var(--primary); font-weight: 900; text-transform: uppercase;
             letter-spacing: 3px; font-size: 0.8rem; margin-bottom: 1rem; display: block;
@@ -225,18 +207,18 @@
 
     <section class="hero-section text-center">
         <div class="container" style="z-index: 10;">
-            <div class="badge-urgent fade-in-up" style="animation-delay: 0.1s;">
+            <div class="badge-urgent">
                 <i class="bi bi-broadcast pulse me-2"></i> High-Priority Food Rescue Channel
             </div>
-            <h1 class="hero-title fade-in-up" style="animation-delay: 0.2s;">
+            <h1 class="hero-title">
                 Save Surplus <br> <span style="background: linear-gradient(135deg, #fca311, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Event Food</span>
             </h1>
-            <p class="hero-subtitle fade-in-up" style="animation-delay: 0.3s;">
+            <p class="hero-subtitle">
                 Had a wedding, birthday, or corporate gathering? Don't let bulk food go to waste. 
                 Our rapid dispatch system connects you to verified NGOs within minutes.
             </p>
 
-            <div class="d-flex justify-content-center gap-4 fade-in-up" style="animation-delay: 0.4s;">
+            <div class="d-flex justify-content-center gap-4">
                 <a href="{{ url_for('food_rescue.submit_rescue') }}" class="btn-pro btn-amber">
                     <i class="bi bi-megaphone-fill"></i> Launch Rescue
                 </a>
@@ -257,21 +239,21 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="step-card fade-in-up" style="animation-delay: 0.5s;">
+                <div class="step-card">
                     <div class="step-icon"><i class="bi bi-clipboard-check"></i></div>
                     <h4 class="text-white fw-800">Report Surface</h4>
                     <p class="text-secondary small">Fill a 30-second form about your event and food quantity.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="step-card fade-in-up" style="animation-delay: 0.6s;">
+                <div class="step-card">
                     <div class="step-icon"><i class="bi bi-broadcast-pin"></i></div>
                     <h4 class="text-white fw-800">Live Broadcast</h4>
                     <p class="text-secondary small">Nearby verified NGOs receive a high-priority "Mega Rescue" alert.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="step-card fade-in-up" style="animation-delay: 0.7s;">
+                <div class="step-card">
                     <div class="step-icon"><i class="bi bi-truck"></i></div>
                     <h4 class="text-white fw-800">Rapid Pickup</h4>
                     <p class="text-secondary small">An NGO team arrives at your venue for a professional pickup.</p>
@@ -280,7 +262,7 @@
         </div>
     </div>
 
-    <div class="container py-5 mb-5 fade-in-up" style="animation-delay: 0.8s;">
+    <div class="container py-5 mb-5">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
                 <div class="glass-widget">
@@ -316,10 +298,10 @@
     </div>
 
     <!-- 📜 LIVE FEED -->
-    <div class="container py-5 border-top border-secondary border-opacity-10 fade-in-up" style="animation-delay: 1.0s;">
+    <div class="container py-5 border-top border-secondary border-opacity-10">
         <div class="d-flex justify-content-between align-items-end mb-5">
             <div>
-                <span class="section-label">Live Dispatch Feed</span>
+                <span class="section-label">Live Dispatch Feed <span style="background:var(--primary); color:#000; padding:2px 8px; border-radius:4px; font-size:0.6rem; vertical-align:middle; margin-left:10px;">V3.0 PRO</span></span>
                 <h3 class="fw-900 text-white h4 m-0">Active Rescue Missions</h3>
             </div>
         </div>
@@ -327,17 +309,22 @@
         <div class="row g-4 mb-5">
             {% for r in active_rescues[:3] %}
             <div class="col-md-4">
-                <div class="rescue-ticket">
-                    <div class="d-flex justify-content-between">
-                        <div class="p-3 bg-white bg-opacity-5 rounded-4"><i class="bi bi-cup-hot-fill text-amber fs-4"></i></div>
-                        <span class="badge bg-success bg-opacity-20 text-success rounded-pill px-3 py-2 small fw-bold">ACTIVE</span>
+                <div style="background:linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(245,158,11,0.2); border-radius: 26px; padding: 1.75rem; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, #f59e0b, transparent);"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="width:48px; height:48px; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">🍱</div>
+                        <span style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:4px 12px; border-radius:100px; font-size:0.65rem; font-weight:900;">ACTIVE</span>
                     </div>
+
                     <div>
-                        <h4 class="fw-900 text-white mb-2">{{ r.event_type }}</h4>
-                        <p class="text-secondary small mb-3">Support for <strong>{{ r.quantity_persons }}</strong> individuals</p>
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-geo-alt-fill text-danger small"></i>
-                            <span class="text-muted small">{{ r.address }}</span>
+                        <h4 style="color:white; font-weight:900; margin-bottom:8px; font-size:1.15rem;">{{ r.event_type }}</h4>
+                        <div style="color:#94a3b8; font-size:0.85rem; margin-bottom:15px;">
+                            Mission set to rescue yield for <strong style="color:white;">{{ r.quantity_persons }}+</strong> individuals.
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; background:rgba(239,68,68,0.08); padding:8px 12px; border-radius:10px; border:1px solid rgba(239,68,68,0.15);">
+                            <span style="font-size:1rem;">📍</span>
+                            <span style="color:#f1f5f9; font-size:0.78rem; font-weight:600;">{{ r.address }}</span>
                         </div>
                     </div>
                 </div>
@@ -357,11 +344,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.querySelectorAll('.fade-in-up').forEach((el, i) => {
-            el.style.animationDelay = (i * 0.1) + 's';
-        });
-    </script>
 </body>
 
 </html>

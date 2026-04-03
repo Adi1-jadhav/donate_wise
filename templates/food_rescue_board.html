@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Live Food Radar | DonateWise</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+    body {
+        background-color: #0f172a;
+        color: #f8fafc;
+    }
+
+    .radar-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px 0 20px;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+        border-color: rgba(245, 158, 11, 0.4);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .pulsing-dot {
+        width: 12px;
+        height: 12px;
+        background-color: #ef4444;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .timer-alert {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.1);
+        padding: 4px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-claim {
+        background: #10b981;
+        color: white;
+    }
+</style>
+
+<div class="radar-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold m-0"><span class="pulsing-dot me-2"></span> Active Food Radar</h2>
+            <p class="text-secondary mt-1 mb-0">Live monitoring of mass food surplus across the city.</p>
+        </div>
+        <a href="{{ url_for('main.ngo_dashboard') }}" class="btn btn-outline-secondary rounded-pill">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Active Urgent Board -->
+    <h4 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Urgent Rescues Available</h4>
+    <div class="row g-4 mb-5">
+        {% for r in active_rescues %}
+            {% if not r.is_expired and r.status == 'Urgent' %}
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card p-4 h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-danger rounded-pill px-3">{{ r.event_type }}</span>
+                        <div class="timer-alert"><i class="bi bi-hourglass-bottom me-1"></i> {{ r.hours_remaining }}h left</div>
+                    </div>
+                    
+                    <h5 class="fw-bold text-white mb-1"><i class="bi bi-people-fill text-muted me-2"></i> Food for {{ r.quantity_persons }}</h5>
+                    <p class="text-secondary small mb-3">{{ r.food_type }}</p>
+
+                    <div class="bg-dark rounded p-3 mb-4 flex-grow-1 border border-secondary" style="--bs-border-opacity: .3;">
+                        <span class="text-warning small fw-bold">PICKUP ADDRESS</span>
+                        <p class="text-light mb-0 small mt-1"><i class="bi bi-geo-alt-fill me-1"></i> {{ r.address }}</p>
+                    </div>
+
+                    <button type="button" class="btn w-100 fw-bold border-0 text-dark" style="background: linear-gradient(135deg, #fcd34d, #f59e0b);" data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}">
+                        <i class="bi bi-truck me-2"></i> ACCEPT DISPATCH
+                    </button>
+                </div>
+            </div>
+
+            <!-- Acceptance Modal -->
+            <div class="modal fade text-dark" id="claimModal-{{ r.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+                        <div class="modal-header border-0 bg-warning">
+                            <h5 class="modal-title fw-bold"><i class="bi bi-shield-check"></i> Disptach Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <p class="fs-5">You are claiming a highly perishable donation for <strong>{{ r.quantity_persons }} persons</strong>.</p>
+                            <div class="alert alert-danger border-0">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i> Only claim this if your team can retrieve the food within the ETA. Upon claiming, the donor's contact number will be unlocked.
+                            </div>
+                            <form action="{{ url_for('food_rescue.claim_rescue') }}" method="POST">
+                                <input type="hidden" name="rescue_id" value="{{ r.id }}">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Your Expected Time of Arrival (ETA)</label>
+                                    <select class="form-select border-2" name="eta_minutes" required>
+                                        <option value="15">15 Minutes</option>
+                                        <option value="30">30 Minutes</option>
+                                        <option value="45">45 Minutes</option>
+                                        <option value="60">1 Hour</option>
+                                        <option value="90">1.5 Hours</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-pill mt-3">Confirm Dispatch</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-search text-secondary display-1 opacity-25"></i>
+            <h4 class="text-secondary mt-3">Scanning Area... No urgent surplus right now.</h4>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- My En Route Pickups -->
+    <h4 class="fw-bold mt-5 mb-4 border-bottom border-secondary pb-2"><i class="bi bi-truck text-success me-2"></i> My Active Dispatches (En Route)</h4>
+    <div class="row g-4">
+        {% for m in my_claims %}
+            {% if m.status == 'Claimed' %}
+            <div class="col-md-6">
+                <div class="glass-card p-4 border-success" style="--bs-border-opacity: .4;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-success rounded-pill px-3">En Route - ETA {{ m.eta_minutes }}m</span>
+                        <span class="text-secondary small">Claimed at {{ m.claimed_at.strftime('%H:%M') }}</span>
+                    </div>
+                    
+                    <h5 class="fw-bold text-white mb-2">{{ m.event_type }} <span class="text-muted fw-normal">(For {{ m.quantity_persons }})</span></h5>
+                    
+                    <div class="row mt-4">
+                        <div class="col-sm-6 mb-3">
+                            <span class="text-secondary small fw-bold text-uppercase d-block">Contact Donor</span>
+                            <a href="tel:{{ m.contact_number }}" class="text-white fs-5 fw-bold text-decoration-none"><i class="bi bi-telephone-fill text-success me-2"></i>{{ m.contact_number }}</a>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <span class="text-secondary small fw-bold text-uppercase d-block">Location</span>
+                            <span class="text-white small"><i class="bi bi-pin-map-fill text-danger me-1"></i>{{ m.address }}</span>
+                        </div>
+                    </div>
+
+                    <form action="{{ url_for('food_rescue.picked_up_rescue') }}" method="POST" class="mt-3">
+                        <input type="hidden" name="rescue_id" value="{{ m.id }}">
+                        <button type="submit" class="btn btn-outline-success w-100 rounded-pill fw-bold border-2">
+                            <i class="bi bi-check-circle-fill me-2"></i> Mark as Successfully Picked Up
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="col-12">
+            <p class="text-secondary">You have no active dispatches en route.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

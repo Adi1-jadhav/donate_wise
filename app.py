@@ -2,6 +2,7 @@ from flask import Flask
 from routes.auth import auth
 from routes.main import main
 from routes.admin import admin_bp
+from routes.food_rescue import food_rescue_bp
 import os
 from dotenv import load_dotenv
 
@@ -14,6 +15,8 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(main)
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(food_rescue_bp)
+    
     return app
 
 app = create_app()

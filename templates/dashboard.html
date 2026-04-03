@@ -370,7 +370,7 @@
                                 {% if d.image_filename %}
                                 <div class="col-md-6 mb-3">
                                     <strong class="small text-muted d-block mb-1">Photo Attached</strong>
-                                    {% if d.image_filename.startswith('http') %}
+                                    {% if d.image_filename and d.image_filename.startswith('http') %}
                                     <img src="{{ d.image_filename }}" class="img-fluid rounded shadow-sm border"
                                         style="max-height:160px; object-fit: cover; width: 100%;">
                                     {% else %}

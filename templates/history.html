@@ -584,7 +584,7 @@
                                 🚨
                             </div>
                             {% elif item.image_filename %}
-                            {% if item.image_filename.startswith('http') %}
+                            {% if item.image_filename and item.image_filename.startswith('http') %}
                             <img src="{{ item.image_filename }}" class="item-thumb border" style="object-fit: cover;">
                             {% else %}
                             <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"

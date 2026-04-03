@@ -103,8 +103,23 @@
 
         .label-pro {
             font-weight: 800; text-transform: uppercase; font-size: 0.65rem;
-            letter-spacing: 2px; color: #64748b; margin-bottom: 0.5rem; display: block;
+            letter-spacing: 2.5px; color: #94a3b8; margin-bottom: 0.5rem; display: block;
         }
+
+        /* 📡 TACTICAL SIGNALS */
+        .badge-tactical {
+            background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
+            padding: 8px 16px; border-radius: 100px; font-size: 0.7rem;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+        }
+        .badge-priority {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
+            padding: 8px 16px; border-radius: 100px; font-size: 0.7rem;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+        .text-intelligence { color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
 
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(10px); padding: 0.75rem 0; }
@@ -186,20 +201,20 @@
                 {% if not r.is_expired and r.status == 'Urgent' %}
                 <div class="col-lg-6">
                     <div class="mission-ticket">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="p-3 bg-white bg-opacity-5 rounded-4"><i class="bi bi-cup-hot text-amber fs-4"></i></div>
-                            <span class="badge bg-primary bg-opacity-20 text-primary rounded-pill px-3 py-2 small fw-bold">{{ r.hours_remaining }}h LEFT</span>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="p-3 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-10"><i class="bi bi-cup-hot text-amber fs-4"></i></div>
+                            <span class="badge-tactical"><i class="bi bi-clock-history me-2"></i>{{ r.hours_remaining }}h LEFT</span>
                         </div>
 
                         <div>
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h4 class="fw-900 text-white m-0 h5">{{ r.event_type }}</h4>
-                                <span class="badge bg-danger bg-opacity-20 text-danger rounded-pill px-2 py-1 small" style="font-size: 0.6rem;">HIGH PRIORITY</span>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="fw-950 text-white m-0 h5" style="letter-spacing: -0.5px;">{{ r.event_type }}</h4>
+                                <span class="badge-priority">CRITICAL</span>
                             </div>
-                            <p class="text-muted small mb-3"><i class="bi bi-people-fill me-1"></i> Serves ~{{ r.quantity_persons }} persons</p>
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-geo-alt-fill text-danger opacity-75"></i>
-                                <span class="text-secondary small">{{ r.address }}</span>
+                            <p class="text-intelligence small mb-4"><i class="bi bi-people-fill text-amber me-2"></i>Estimating survival for ~{{ r.quantity_persons }} persons</p>
+                            <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-white bg-opacity-5 rounded-3 border border-white border-opacity-5">
+                                <i class="bi bi-geo-alt-fill text-danger opacity-90 ms-2"></i>
+                                <span class="text-white small fw-600 opacity-90">{{ r.address }}</span>
                             </div>
                         </div>
 

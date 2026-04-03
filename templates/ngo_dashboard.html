@@ -104,13 +104,15 @@
 
         /* 🎫 UNIFIED DISPATCH TICKETS */
         .dispatch-card {
-            background: white; border-radius: 25px; padding: 2rem;
-            border: 1px solid #e2e8f0; margin-bottom: 1.5rem;
-            transition: all 0.3s; display: flex; align-items: center; gap: 2rem;
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px);
+            border-radius: 28px; padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; align-items: center; gap: 2rem;
         }
         .dispatch-card:hover {
-            border-color: var(--primary); box-shadow: 0 15px 40px -10px rgba(59, 130, 246, 0.1);
-            transform: translateX(8px);
+            border-color: var(--primary); box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-5px) scale(1.01);
         }
         .dispatch-card.claimed { border-left: 8px solid var(--success); }
         .dispatch-card.nearby { border-left: 8px solid var(--amber); }
@@ -140,6 +142,22 @@
         .pulse-pro {
             animation: sensors-glow 2s infinite;
         }
+
+        /* 📡 SONAR RIPPLE */
+        @keyframes sonar {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .sonar-marker {
+            width: 20px; height: 20px; background: var(--primary);
+            border-radius: 50%; position: relative;
+        }
+        .sonar-marker::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; background: var(--primary);
+            border-radius: 50%; animation: sonar 1.5s infinite;
+        }
+        .radar-tactical { filter: brightness(0.7) contrast(1.2) sepia(0.2) hue-rotate(180deg) saturate(1.5); }
 
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(8px); padding: 0.75rem 0; }
@@ -266,7 +284,7 @@
                 </div>
             </div>
             <div class="tactical-map-wrap">
-                <div id="radarMap"></div>
+                <div id="radarMap" class="radar-tactical"></div>
             </div>
         </div>
 
@@ -389,7 +407,13 @@
         [...rawUnclaimed, ...rawClaimed].forEach(item => {
             const hash = Math.abs(item.id.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0));
             const pos = [ngoBasePos[0] + (hash % 1000 / 20000) - 0.025, ngoBasePos[1] + (hash % 999 / 19980) - 0.025];
-            L.circleMarker(pos, { radius: 8, color: '#fff', weight: 3, opacity: 1, fillOpacity: 0.8, fillColor: rawClaimed.some(c => c.id === item.id) ? '#10b981' : '#3b82f6' }).addTo(map);
+            
+            const color = rawClaimed.some(c => c.id === item.id) ? '#10b981' : '#3b82f6';
+            const sonarIcon = L.divIcon({
+                html: `<div class="sonar-marker" style="background: ${color};"><div style="background: ${color}; position: absolute; width: 100%; height: 100%; border-radius: 50%; animation: sonar 1.5s infinite;"></div></div>`,
+                className: 'custom-sonar', iconSize: [20, 20], iconAnchor: [10, 10]
+            });
+            L.marker(pos, { icon: sonarIcon }).addTo(map);
         });
     </script>
 

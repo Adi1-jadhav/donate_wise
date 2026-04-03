@@ -519,10 +519,10 @@
                 <div class="donation-card">
                     <!-- Top color bar by status -->
                     <div class="card-top-bar"
-                        style="background: {% if status == 'Fulfilled' %}linear-gradient(90deg, #10b981, #34d399){% elif status == 'Dispatched' %}linear-gradient(90deg, #4f46e5, #818cf8){% elif item.claimed_by %}linear-gradient(90deg, #8b5cf6, #a78bfa){% else %}linear-gradient(90deg, #f59e0b, #fbbf24){% endif %};">
+                        style="background: {% if item.is_mega_rescue %}linear-gradient(90deg, #e11d48, #f43f5e){% elif status == 'Fulfilled' %}linear-gradient(90deg, #10b981, #34d399){% elif status == 'Dispatched' %}linear-gradient(90deg, #4f46e5, #818cf8){% elif item.claimed_by %}linear-gradient(90deg, #8b5cf6, #a78bfa){% else %}linear-gradient(90deg, #f59e0b, #fbbf24){% endif %};">
                     </div>
 
-                    <div class="card-content">
+                    <div class="card-content {% if item.is_mega_rescue %}bg-light bg-opacity-50{% endif %}">
                         <!-- Header row -->
                         <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
                             <div>
@@ -544,7 +544,11 @@
 
                         <!-- Item details row -->
                         <div class="d-flex align-items-start gap-3">
-                            {% if item.image_filename %}
+                            {% if item.is_mega_rescue %}
+                            <div class="item-thumb-placeholder" style="background: rgba(244, 63, 94, 0.1); color: var(--rose);">
+                                🚨
+                            </div>
+                            {% elif item.image_filename %}
                             {% if item.image_filename.startswith('http') %}
                             <img src="{{ item.image_filename }}" class="item-thumb border" style="object-fit: cover;">
                             {% else %}

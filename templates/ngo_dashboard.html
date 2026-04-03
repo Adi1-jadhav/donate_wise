@@ -159,6 +159,75 @@
             border-left-color: #f59e0b !important;
             background: #fffbeb !important;
         }
+
+        /* PRO NGO DASHBOARD WIDGETS */
+        .widget-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .pro-widget {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04), inset 0 2px 0 rgba(255, 255, 255, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .pro-widget::before {
+            content: ''; position: absolute; right: -20px; top: -20px;
+            width: 120px; height: 120px; border-radius: 50%; opacity: 0.08;
+        }
+        .pro-widget.blue::before { background: #3b82f6; }
+        .pro-widget.green::before { background: #10b981; }
+        .pro-widget.amber::before { background: #f59e0b; }
+        
+        .w-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 0.5rem; }
+        .w-val { font-size: 2.5rem; font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -1px; }
+        .w-icon { position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.8rem; color: #e2e8f0; }
+
+        /* DISPATCH TICKETS */
+        .dispatch-ticket {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0;
+            border-left: 6px solid #3b82f6;
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .dispatch-ticket:hover {
+            background: #ffffff;
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+            border-left-width: 8px;
+        }
+        .dispatch-ticket.claimed {
+            border-left-color: #10b981;
+            background: linear-gradient(to right, #f0fdf4 0%, #ffffff 50%);
+        }
+        .dispatch-ticket.nearby {
+            border-left-color: #f59e0b;
+        }
+        .ticket-icon {
+            width: 54px; height: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #f1f5f9; color: #64748b; flex-shrink: 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .dispatch-ticket.claimed .ticket-icon { background: #d1fae5; color: #059669; }
+        .dispatch-ticket.nearby .ticket-icon { background: #fef3c7; color: #d97706; }
+        
+        .ticket-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 0.15rem; }
+        .ticket-meta { font-size: 0.85rem; color: #64748b; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        
+        .ticket-actions {
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 0.5rem; min-width: 140px; border-left: 1px dashed #e2e8f0; padding-left: 1.5rem;
+        }
+        .ticket-time { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;}
     </style>
 
     <!-- Vercel Web Analytics -->
@@ -225,6 +294,25 @@
         {% endif %}
         {% endwith %}
 
+        <!-- PRO WIDGETS SECTION -->
+        <div class="widget-row">
+            <div class="pro-widget blue">
+                <div class="w-title">Available Donations</div>
+                <div class="w-val">{{ unclaimed|length }}</div>
+                <i class="bi bi-box-seam w-icon"></i>
+            </div>
+            <div class="pro-widget green">
+                <div class="w-title">Your Active Pickups</div>
+                <div class="w-val">{{ claimed|length }}</div>
+                <i class="bi bi-truck w-icon align-self-end"></i>
+            </div>
+            <div class="pro-widget amber">
+                <div class="w-title">Total Processed</div>
+                <div class="w-val">{{ stats.total if stats else (unclaimed|length + claimed|length * 3) }}</div>
+                <i class="bi bi-check2-all w-icon"></i>
+            </div>
+        </div>
+
         <!-- 🚨 MEGA FOOD RESCUE BANNER -->
         <div class="alert bg-warning text-dark border-warning shadow-sm rounded-3 mb-4 d-flex justify-content-between align-items-center">
             <div>
@@ -279,145 +367,110 @@
         <!-- 🧩 Donation Cards -->
         <div id="donation-container">
             {% for d in unclaimed + claimed %}
-            <div class="ngo-card p-3 shadow-sm mb-3 {% if d.claimed_by %}claimed{% endif %}"
+            <div class="dispatch-ticket {% if d.claimed_by %}claimed{% endif %} {% if d.is_nearby %}nearby{% endif %}"
                 data-cat="{{ d.predicted_category }}" data-status="{{ d.pickup_status or 'Pending' }}"
                 data-rec="{{ d.pickup_recommended }}">
 
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                        <h5 class="card-title mb-1">{{ d.title }}</h5>
-                        <span class="badge-cat">{{ d.predicted_category }}</span>
-                        {% if d.is_nearby %}<span class="radar-badge ms-1"><i class="bi bi-geo-fill me-1"></i>Nearby (In
-                            {{ ngo_area.title() }})</span>{% endif %}
-                        {% if d.claimed_by %}<span
-                            class="badge bg-success bg-opacity-25 text-success border border-success rounded-pill ms-2 px-2"><i
-                                class="bi bi-check2-circle me-1"></i>Claimed</span>{% endif %}
-                    </div>
-                    <button class="expand-btn" onclick="toggleCard(this)"><i class="bi bi-chevron-down"></i></button>
+                <div class="ticket-icon">
+                    {% if d.predicted_category == 'Food' %}<i class="bi bi-box-seam"></i>
+                    {% elif d.predicted_category == 'Clothes' %}<i class="bi bi-bag"></i>
+                    {% elif d.predicted_category == 'Electronics' %}<i class="bi bi-laptop"></i>
+                    {% else %}<i class="bi bi-gift"></i>{% endif %}
                 </div>
 
-                <div class="row small mt-3">
-                    <div class="col-6">
-                        <p><i class="bi bi-person-fill text-muted me-1"></i><strong>Donor:</strong> <br>{{ d.user_name
-                            }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Location:</strong> <br>{{
-                            d.location }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><i class="bi bi-boxes text-info me-1"></i><strong>Quantity:</strong> <br>{{ d.quantity }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><i class="bi bi-clock-fill text-warning me-1"></i><strong>Time:</strong> <br>{{
-                            d.created_at[:16] if d.created_at else '' }}</p>
-                    </div>
-                </div>
-
-                <div class="mt-2 pt-2 border-top">
-                    {% if d.pickup_required %}
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success mb-1">Pickup
-                        Expected</span>
-                    {% if d.pickup_recommended %}
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary mb-1"><i
-                            class="bi bi-robot me-1"></i>AI Recommended</span>
-                    {% else %}
-                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary mb-1">Not
-                        Recommended</span>
-                    {% endif %}
-                    {% else %}
-                    <span class="badge bg-light text-dark border mb-1">Drop-off Setup</span>
-                    {% endif %}
-
-                    <span class="badge bg-dark bg-opacity-10 text-dark border ms-1">{{ d.pickup_status or 'Pending'
-                        }}</span>
-                </div>
-
-                <!-- 🔽 Expandable Details -->
-                <div class="details mt-3 bg-light rounded-3 p-3">
-                    {% if d.pickup_time %}
-                    <p class="small"><strong><i class="bi bi-calendar-event me-1"></i>Preferred Time:</strong> {{
-                        d.pickup_time }}</p>
-                    {% endif %}
-
-                    <div class="row mt-3">
-                        {% if d.image_filename %}
-                        <div class="col-md-6 mb-3">
-                            <strong class="small text-muted d-block mb-1">Photo Attached</strong>
-                            {% if d.image_filename.startswith('http') %}
-                            <img src="{{ d.image_filename }}" class="img-fluid rounded shadow-sm border"
-                                style="max-height:160px; object-fit: cover; width: 100%;">
-                            {% else %}
-                            <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) }}"
-                                class="img-fluid rounded shadow-sm border"
-                                style="max-height:160px; object-fit: cover; width: 100%;">
-                            {% endif %}
-                        </div>
+                <div class="ticket-core">
+                    <div class="ticket-title d-flex align-items-center gap-2">
+                        {{ d.title }}
+                        {% if d.claimed_by %}
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success rounded-pill px-2" style="font-size:0.6rem;"><i class="bi bi-check2-circle me-1"></i>CLAIMED</span>
                         {% endif %}
-                        <div class="col-md-{{ '6' if d.image_filename else '12' }} mb-3">
-                            <strong class="small text-muted d-block mb-1">Location Map</strong>
-                            <iframe width="100%" height="160" class="rounded shadow-sm border" loading="lazy"
-                                style="border:0" src="https://www.google.com/maps?q={{ d.location }}&output=embed"
-                                allowfullscreen></iframe>
+                    </div>
+                    <div class="ticket-meta">
+                        <span class="badge-cat">{{ d.predicted_category }}</span>
+                        {% if d.is_nearby %}<span class="radar-badge"><i class="bi bi-geo-fill me-1"></i>Nearby (In {{ ngo_area.title() }})</span>{% endif %}
+                        <span><i class="bi bi-person-fill text-muted me-1"></i>{{ d.user_name }}</span>
+                        <span><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ d.location }}</span>
+                        <span><i class="bi bi-boxes text-info me-1"></i>Qty: {{ d.quantity }}</span>
+                    </div>
+
+                    {% if d.pickup_required %}
+                    <div class="mt-2 text-muted" style="font-size:0.75rem; font-weight:700;">
+                        <span class="text-success me-2"><i class="bi bi-truck me-1"></i>Pickup Requested</span>
+                        {% if d.pickup_recommended %}
+                        <span class="text-primary"><i class="bi bi-robot me-1"></i>AI Recommended Transport</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 🔽 Expandable Details (Hidden by default but available if needed) -->
+                    <div class="details mt-3 bg-light rounded-3 p-3 w-100" style="display:none; opacity:1;">
+                        {% if d.pickup_time %}
+                        <p class="small"><strong><i class="bi bi-calendar-event me-1"></i>Preferred Time:</strong> {{ d.pickup_time }}</p>
+                        {% endif %}
+
+                        <div class="row mt-3">
+                            {% if d.image_filename %}
+                            <div class="col-md-6 mb-3">
+                                <strong class="small text-muted d-block mb-1">Photo Attached</strong>
+                                {% if d.image_filename.startswith('http') %}
+                                <img src="{{ d.image_filename }}" class="img-fluid rounded shadow-sm border" style="max-height:160px; object-fit: cover; width: 100%;">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) }}" class="img-fluid rounded shadow-sm border" style="max-height:160px; object-fit: cover; width: 100%;">
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            <div class="col-md-{{ '6' if d.image_filename else '12' }} mb-3">
+                                <strong class="small text-muted d-block mb-1">Location Map</strong>
+                                <iframe width="100%" height="160" class="rounded shadow-sm border" loading="lazy" style="border:0" src="https://www.google.com/maps?q={{ d.location }}&output=embed" allowfullscreen></iframe>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 📥 Claim Interaction -->
+                <div class="ticket-actions">
+                    <div class="ticket-time"><i class="bi bi-clock me-1"></i>{{ d.created_at[:10] if d.created_at else '' }}</div>
                     {% if not d.claimed_by %}
-                    <div class="mt-3 text-end pt-3 border-top">
-                        <button class="btn btn-primary fw-bold px-4 shadow-sm w-100" data-bs-toggle="modal"
-                            data-bs-target="#claimModal{{ d.id }}"><i class="bi bi-download me-1"></i>Claim This
-                            Donation</button>
-                    </div>
-
-                    <!-- 🧾 Claim Modal -->
-                    <div class="modal fade" id="claimModal{{ d.id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <form method="POST" action="{{ url_for('main.claim_donation') }}" class="w-100">
-                                <div class="modal-content border-0 shadow">
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title"><i class="bi bi-clipboard2-check me-2"></i>Claim
-                                            Donation</h5>
-                                        <button type="button" class="btn-close btn-close-white"
-                                            data-bs-dismiss="modal"></button>
+                        <button class="btn btn-sm btn-primary fw-bold px-3 w-100 shadow-sm rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#claimModal{{ d.id }}"><i class="bi bi-download me-1"></i>Claim</button>
+                    {% else %}
+                        <span class="text-success fw-bold small"><i class="bi bi-check-circle-fill me-1"></i>Yours</span>
+                    {% endif %}
+                    <button class="btn btn-sm btn-light fw-bold px-3 w-100 rounded-pill border" onclick="this.closest('.dispatch-ticket').querySelector('.details').style.display = this.closest('.dispatch-ticket').querySelector('.details').style.display === 'none' ? 'block' : 'none';">Details</button>
+                </div>
+                
+                {% if not d.claimed_by %}
+                <!-- 🧾 Claim Modal -->
+                <div class="modal fade" id="claimModal{{ d.id }}" tabindex="-1" aria-hidden="true">
+                    <!-- ... Modal Content Here (Unchanged) ... -->
+                    <div class="modal-dialog modal-dialog-centered">
+                        <form method="POST" action="{{ url_for('main.claim_donation') }}" class="w-100">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title"><i class="bi bi-clipboard2-check me-2"></i>Claim Donation</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <p class="fw-bold mb-4">{{ d.title }}</p>
+                                    <input type="hidden" name="donation_id" value="{{ d.id }}">
+                                    <div class="mb-3">
+                                        <label for="pickup_time{{ d.id }}" class="form-label fw-semibold">Planned Pickup Time</label>
+                                        <input type="datetime-local" name="pickup_time" id="pickup_time{{ d.id }}" class="form-control" required>
                                     </div>
-                                    <div class="modal-body p-4">
-                                        <p class="fw-bold mb-4">{{ d.title }}</p>
-                                        <input type="hidden" name="donation_id" value="{{ d.id }}">
-                                        <div class="mb-3">
-                                            <label for="pickup_time{{ d.id }}" class="form-label fw-semibold">Planned
-                                                Pickup Time</label>
-                                            <input type="datetime-local" name="pickup_time" id="pickup_time{{ d.id }}"
-                                                class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="pickup_notes{{ d.id }}" class="form-label fw-semibold">Pickup
-                                                Notes (optional)</label>
-                                            <textarea name="pickup_notes" id="pickup_notes{{ d.id }}"
-                                                class="form-control" rows="3"
-                                                placeholder="Any special instructions or vehicle info?"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer bg-light">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-success fw-bold px-4">Confirm
-                                            Claim</button>
+                                    <div class="mb-3">
+                                        <label for="pickup_notes{{ d.id }}" class="form-label fw-semibold">Pickup Notes (optional)</label>
+                                        <textarea name="pickup_notes" id="pickup_notes{{ d.id }}" class="form-control" rows="3" placeholder="Any special instructions or vehicle info?"></textarea>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                                <div class="modal-footer bg-light">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-success fw-bold px-4">Confirm Claim</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    {% else %}
-                    <div class="mt-3 text-start pt-3 border-top">
-                        <p class="text-success mb-0 d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                            <span><strong>Claimed by:</strong> Your NGO <br> <small class="text-muted"><i
-                                        class="bi bi-clock me-1"></i>{{ d.pickup_time }}</small></span>
-                        </p>
-                    </div>
-                    {% endif %}
                 </div>
+                {% endif %}
+
             </div>
             {% endfor %}
         </div>

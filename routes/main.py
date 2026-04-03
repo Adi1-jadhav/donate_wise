@@ -188,6 +188,26 @@ def profile():
     ])
     recent = list(recent_cursor)
 
+    # Bring in Food Rescues
+    rescue_cursor = db.food_rescues.find({"donor_id": user_id}).sort("created_at", -1).limit(5)
+    for r in rescue_cursor:
+        r['id'] = str(r['_id'])
+        r['title'] = f"🚨 {r.get('event_type', 'Event')} Mega Rescue"
+        r['predicted_category'] = "Bulk Food"
+        r['quantity'] = f"{r.get('quantity_persons', 0)} Persons"
+        r['pickup_status'] = r.get('status')
+        r['is_mega_rescue'] = True
+        if r.get('claimed_by'):
+            try:
+                ngo = db.ngos.find_one({"_id": ObjectId(r['claimed_by'])})
+                if ngo: r['ngo_name'] = ngo.get('org_name')
+            except Exception: pass
+        recent.append(r)
+
+    from datetime import datetime
+    recent.sort(key=lambda x: x.get('created_at') or datetime.min, reverse=True)
+    recent = recent[:5]
+
     # # Get recent history for the feed
     # conn = get_db_connection()
     # cur = conn.cursor(dictionary=True)
@@ -470,6 +490,31 @@ def history():
         }
     ])
     history_data = list(history_cursor)
+    
+    # Fetch Mega Rescues for history
+    rescue_cursor = db.food_rescues.find({"donor_id": user_id}).sort("created_at", -1)
+    for r in rescue_cursor:
+        r['id'] = str(r['_id'])
+        r['title'] = f"🚨 {r.get('event_type', 'Event')} Mega Rescue"
+        r['predicted_category'] = "Bulk Food"
+        r['quantity'] = f"{r.get('quantity_persons', 0)} Persons"
+        r['pickup_status'] = r.get('status')
+        r['location'] = r.get('address')
+        r['is_mega_rescue'] = True
+        
+        if r.get('claimed_by'):
+            from bson import ObjectId
+            try:
+                ngo = db.ngos.find_one({"_id": ObjectId(r['claimed_by'])})
+                if ngo:
+                    r['ngo_name'] = ngo.get('org_name')
+                    r['ngo_location'] = ngo.get('location')
+            except Exception: pass
+            
+        history_data.append(r)
+
+    from datetime import datetime
+    history_data.sort(key=lambda x: x.get('created_at') or datetime.min, reverse=True)
     
     # conn = get_db_connection()
     # cur = conn.cursor(dictionary=True)

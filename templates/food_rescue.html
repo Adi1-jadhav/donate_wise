@@ -322,9 +322,26 @@
                         <div style="color:#94a3b8; font-size:0.85rem; margin-bottom:15px;">
                             Mission set to rescue yield for <strong style="color:white;">{{ r.quantity_persons }}+</strong> individuals.
                         </div>
-                        <div style="display:flex; align-items:center; gap:8px; background:rgba(239,68,68,0.08); padding:8px 12px; border-radius:10px; border:1px solid rgba(239,68,68,0.15);">
-                            <span style="font-size:1rem;">📍</span>
-                            <span style="color:#f1f5f9; font-size:0.78rem; font-weight:600;">{{ r.address }}</span>
+                        
+                        <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+                            <button onclick="var p=this.parentNode.nextElementSibling; p.style.display=p.style.display=='none'?'block':'none'; this.textContent=p.style.display=='none'?'View Details':'✕ Close';" style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:white; border-radius:12px; padding:10px; font-weight:700; font-size:0.7rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
+                                View Details
+                            </button>
+                        </div>
+
+                        <!-- Hidden Details Panel -->
+                        <div style="display:none; background:rgba(255,255,255,0.02); border-radius:14px; padding:1rem; border:1px solid rgba(255,255,255,0.05); margin-top:0.75rem;">
+                            <div style="margin-bottom:1rem;">
+                                <div style="font-size:0.55rem; font-weight:900; color:#f59e0b; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">🍱 Food Intelligence</div>
+                                <div style="color:white; font-weight:700; font-size:0.85rem;">{{ r.food_type or "High-Quality Surplus" }}</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; background:rgba(239,68,68,0.08); padding:10px; border-radius:10px; border:1px solid rgba(239,68,68,0.15); margin-bottom:1rem;">
+                                <span style="font-size:1.1rem;">📍</span>
+                                <span style="color:#f1f5f9; font-size:0.75rem; font-weight:600;">{{ r.address }}</span>
+                            </div>
+                            <div style="border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);">
+                                <iframe width="100%" height="150" frameborder="0" src="https://maps.google.com/maps?q={{ r.address | urlencode }}&output=embed&z=14"></iframe>
+                            </div>
                         </div>
                     </div>
                 </div>

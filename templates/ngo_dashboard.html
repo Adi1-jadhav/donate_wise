@@ -267,7 +267,7 @@
                             Claimed Items
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.history') }}">History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.ngo_history') }}">History</a></li>
                     {% if session.get('ngo_id') %}
                     <li class="nav-item"><a class="nav-link btn btn-outline-primary ms-lg-3"
                             href="{{ url_for('auth.logout') }}">Logout</a></li>

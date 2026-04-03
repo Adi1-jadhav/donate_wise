@@ -550,6 +550,78 @@ def history():
                                'pending': pending_count
                            })
 
+@main.route('/ngo/history')
+def ngo_history():
+    if not session.get('ngo_id'):
+        flash("Please log in as an NGO to view your mission history.")
+        return redirect(url_for('auth.login'))
+    
+    ngo_id = session['ngo_id']
+    from db.database import get_db
+    db = get_db()
+    
+    # 1. Fetch standard donations claimed by this NGO (specifically Fulfilled or Dispatched)
+    # NGOs usually want to see everything they've ever claimed in their history
+    history_cursor = db.donations.aggregate([
+        {"$match": {"claimed_by": ngo_id}},
+        {"$sort": {"created_at": -1}},
+        {
+            "$lookup": {
+                "from": "users",
+                "let": {"donor_id_str": "$user_id"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": [{"$toString": "$_id"}, "$$donor_id_str"]}}}
+                ],
+                "as": "donor_info"
+            }
+        },
+        {
+            "$project": {
+                "id": {"$toString": "$_id"},
+                "title": 1,
+                "description": 1,
+                "predicted_category": 1,
+                "quantity": 1,
+                "pickup_status": 1,
+                "created_at": 1,
+                "location": 1,
+                "image_filename": 1,
+                "donor_name": {"$arrayElemAt": ["$donor_info.name", 0]},
+                "donor_contact": {"$arrayElemAt": ["$donor_info.contact", 0]}
+            }
+        }
+    ])
+    history_data = list(history_cursor)
+    
+    # 2. Fetch Mega Rescues claimed by this NGO
+    rescue_cursor = db.food_rescues.find({"claimed_by": ngo_id}).sort("created_at", -1)
+    for r in rescue_cursor:
+        r['id'] = str(r['_id'])
+        r['title'] = f"🚨 {r.get('event_type', 'Event')} Mega Rescue"
+        r['predicted_category'] = "Bulk Food"
+        r['quantity'] = f"{r.get('quantity_persons', 0)} Persons"
+        r['pickup_status'] = r.get('status')
+        r['location'] = r.get('address')
+        r['is_mega_rescue'] = True
+        r['donor_name'] = r.get('contact_person', 'Donor')
+        r['donor_contact'] = r.get('contact_number')
+        history_data.append(r)
+
+    from datetime import datetime
+    history_data.sort(key=lambda x: x.get('created_at') or datetime.min, reverse=True)
+    
+    # Stats for NGO
+    total_missions = len(history_data)
+    fulfilled_count = sum(1 for d in history_data if d.get('pickup_status') in ['Fulfilled', 'Completed', 'PickedUp'])
+    
+    return render_template('ngo_history.html', 
+                           history=history_data, 
+                           stats={
+                               'total': total_missions, 
+                               'fulfilled': fulfilled_count,
+                               'pending': total_missions - fulfilled_count
+                           })
+
 @main.route('/certificate/<string:donation_id>')
 def view_certificate(donation_id):
     if not session.get('user_id'):

@@ -119,10 +119,11 @@
             border: 1px solid rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             display: flex; align-items: center; gap: 2rem;
+            flex-wrap: wrap; /* 🔑 key fix: allows details to go on new row */
         }
         .dispatch-card:hover {
             border-color: var(--primary); box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.15);
-            transform: translateY(-5px) scale(1.01);
+            transform: translateY(-4px);
         }
         .dispatch-card.claimed { border-left: 8px solid var(--success); }
         .dispatch-card.nearby { border-left: 8px solid var(--amber); }
@@ -182,9 +183,9 @@
             .s-val { font-size: 2.2rem !important; }
 
             .rescue-banner { flex-direction: column !important; text-align: center !important; gap: 1.5rem !important; padding: 2rem !important; }
-            .dispatch-card { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; padding: 1.5rem !important; }
-            .dispatch-card .d-flex { flex-direction: column !important; align-items: flex-start !important; }
+            .dispatch-card { padding: 1.25rem !important; gap: 1.25rem !important; }
             .dispatch-card .flex-grow-1 { width: 100% !important; }
+            .dispatch-card > div:not(.details) { flex-direction: column !important; }
             .dispatch-card .d-flex.flex-column.gap-2 { 
                 width: 100% !important; border-left: none !important; border-top: 1px dashed #e2e8f0 !important; 
                 padding-left: 0 !important; padding-top: 1.5rem !important; flex-direction: row !important;
@@ -351,9 +352,46 @@
                     </div>
 
                     <!-- Details Area (Expanded) -->
-                    <div class="details mt-4 d-none w-100" style="padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
-                        <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) if d.image_filename and not d.image_filename.startswith('http') else d.image_filename }}" class="img-fluid rounded-4 mb-3" style="max-height: 200px; width: 100%; object-fit: cover;">
-                        <iframe width="100%" height="150" class="rounded-4 border" src="https://www.google.com/maps?q={{ d.location }}&output=embed"></iframe>
+                    <div class="details d-none w-100" style="padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.06); margin-top: 0.5rem;">
+                        <div class="row g-3">
+                            {% if d.image_filename %}
+                            <div class="col-lg-5">
+                                <img src="{{ url_for('static', filename='uploads/' ~ d.image_filename) if d.image_filename and not d.image_filename.startswith('http') else d.image_filename }}"
+                                    class="img-fluid w-100" 
+                                    style="height: 160px; object-fit: cover; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06);"
+                                    onerror="this.style.display='none'">
+                            </div>
+                            <div class="col-lg-7">
+                            {% else %}
+                            <div class="col-12">
+                            {% endif %}
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div style="background:#f8fafc; border-radius:12px; padding:0.75rem; border: 1px solid #e2e8f0;">
+                                            <div style="font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:3px;">Category</div>
+                                            <div style="font-weight:700; font-size:0.85rem; color:#0f172a;">{{ d.predicted_category or 'General' }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div style="background:#f8fafc; border-radius:12px; padding:0.75rem; border: 1px solid #e2e8f0;">
+                                            <div style="font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:3px;">Quantity</div>
+                                            <div style="font-weight:700; font-size:0.85rem; color:#0f172a;">{{ d.quantity }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div style="background:#f8fafc; border-radius:12px; padding:0.75rem; border: 1px solid #e2e8f0;">
+                                            <div style="font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:3px;">📍 Location</div>
+                                            <div style="font-weight:600; font-size:0.82rem; color:#334155;">{{ d.location }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3" style="border-radius:16px; overflow:hidden; border: 1px solid #e2e8f0;">
+                            <iframe width="100%" height="160" frameborder="0" style="display:block;"
+                                src="https://maps.google.com/maps?q={{ d.location | urlencode }}&output=embed&z=14"
+                                loading="lazy"></iframe>
+                        </div>
                     </div>
                 </div>
 

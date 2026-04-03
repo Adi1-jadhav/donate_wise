@@ -70,17 +70,36 @@
         }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* 🎫 MISSION TICKETS */
+        /* 🎫 MISSION TICKETS - TOTAL OVERHAUL */
         .mission-ticket {
-            background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 30px;
-            padding: 2rem; height: 100%; position: relative;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-radius: 28px;
+            padding: 1.75rem;
+            height: 100%;
+            position: relative;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; gap: 1.5rem;
+            display: flex; flex-direction: column; gap: 1.25rem;
+            overflow: hidden;
+        }
+        .mission-ticket::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.6), transparent);
         }
         .mission-ticket:hover {
-            transform: translateY(-8px) scale(1.02);
-            background: rgba(30, 41, 59, 0.6); border-color: rgba(245, 158, 11, 0.4);
+            transform: translateY(-6px);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.5), 0 0 0 1px rgba(245, 158, 11, 0.1);
+        }
+
+        /* ICON - FIXED */
+        .ticket-icon {
+            width: 52px; height: 52px; border-radius: 16px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 88, 12, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; color: #f59e0b; flex-shrink: 0;
         }
 
         /* 🚚 LOGISTICS CARD */
@@ -90,36 +109,86 @@
         }
 
         .btn-mission {
-            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
             color: white; border: none; border-radius: 100px;
-            padding: 12px 24px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1px; font-size: 0.8rem;
+            padding: 14px 24px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 1.5px; font-size: 0.78rem; transition: all 0.3s;
         }
-        .btn-outline-glass {
-            background: transparent; border: 1px solid var(--glass-border);
-            color: white; border-radius: 100px; padding: 12px 24px;
-            font-weight: 600; backdrop-filter: blur(10px);
+        .btn-mission:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .btn-details-glass {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 100px; padding: 14px 20px;
+            font-weight: 700; font-size: 0.78rem;
+            letter-spacing: 0.5px; transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-details-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+        }
+
+        /* DETAILS PANEL - FIXED */
+        .details-panel {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 20px;
+            padding: 1.25rem;
+            margin-top: 0.5rem;
+            animation: slideDown 0.3s ease;
+        }
+        .details-panel.open { display: block; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .detail-row {
+            display: flex; flex-direction: column; gap: 0.3rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .detail-label {
+            font-size: 0.6rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 2px; color: rgba(245, 158, 11, 0.7);
+        }
+        .detail-value {
+            font-size: 0.88rem; font-weight: 600;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.4;
         }
 
         .label-pro {
             font-weight: 800; text-transform: uppercase; font-size: 0.65rem;
             letter-spacing: 2.5px; color: #94a3b8; margin-bottom: 0.5rem; display: block;
         }
-
-        /* 📡 TACTICAL SIGNALS */
+        /* 📡 TACTICAL BADGES */
         .badge-tactical {
-            background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #f59e0b; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
-            padding: 8px 16px; border-radius: 100px; font-size: 0.7rem;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #f59e0b; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 1px; padding: 7px 14px; border-radius: 100px;
+            font-size: 0.68rem; white-space: nowrap;
         }
         .badge-priority {
-            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
-            padding: 8px 16px; border-radius: 100px; font-size: 0.7rem;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #ef4444; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 1px; padding: 7px 14px; border-radius: 100px;
+            font-size: 0.68rem;
         }
-        .text-intelligence { color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
+        .text-intelligence { color: rgba(255, 255, 255, 0.65); line-height: 1.6; }
+
+        /* LOCATION PILL */
+        .loc-pill {
+            display: flex; align-items: center; gap: 0.6rem;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px; padding: 0.6rem 0.9rem;
+        }
+        .loc-pill span { color: rgba(255, 255, 255, 0.88); font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
 
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(10px); padding: 0.75rem 0; }
@@ -129,15 +198,13 @@
             .radar-scanner { height: 300px !important; border-radius: 25px !important; margin-bottom: 2rem !important; }
             .hero-title { font-size: 2.2rem !important; letter-spacing: -1px !important; }
             
-            .mission-ticket { padding: 1.5rem !important; gap: 1.25rem !important; flex-direction: column !important; }
+            .mission-ticket { padding: 1.25rem !important; gap: 1rem !important; }
             .btn-mission { width: 100% !important; padding: 15px !important; }
-            .btn-outline-glass { width: 100% !important; }
+            .btn-details-glass { width: 100% !important; }
             
             .logistics-card { padding: 1.5rem !important; }
             .logistics-card .d-flex { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; }
-            .logistics-card .d-flex.gap-5 { gap: 1.25rem !important; margin-top: 0.5rem !important; flex-direction: column !important; }
             .logistics-card form, .logistics-card button { width: 100% !important; }
-            .mission-ticket .d-flex.gap-3 { flex-direction: column !important; }
         }
     </style>
 </head>
@@ -201,36 +268,65 @@
                 {% if not r.is_expired and r.status == 'Urgent' %}
                 <div class="col-lg-6">
                     <div class="mission-ticket">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="p-3 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-10"><i class="bi bi-cup-hot text-amber fs-4"></i></div>
-                            <span class="badge-tactical"><i class="bi bi-clock-history me-2"></i>{{ r.hours_remaining }}h LEFT</span>
+                        <!-- HEADER ROW -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="ticket-icon">
+                                    <i class="bi bi-cup-hot"></i>
+                                </div>
+                                <div>
+                                    <div class="detail-label" style="margin-bottom: 2px;">Event Type</div>
+                                    <h5 class="text-white fw-900 m-0" style="font-size: 1.1rem; letter-spacing: -0.5px;">{{ r.event_type }}</h5>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                <span class="badge-tactical"><i class="bi bi-clock-history me-1"></i>{{ r.hours_remaining }}h LEFT</span>
+                                <span class="badge-priority">⚡ CRITICAL</span>
+                            </div>
                         </div>
 
+                        <!-- BODY -->
                         <div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h4 class="fw-950 text-white m-0 h5" style="letter-spacing: -0.5px;">{{ r.event_type }}</h4>
-                                <span class="badge-priority">CRITICAL</span>
-                            </div>
-                            <p class="text-intelligence small mb-4"><i class="bi bi-people-fill text-amber me-2"></i>Estimating survival for ~{{ r.quantity_persons }} persons</p>
-                            <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-white bg-opacity-5 rounded-3 border border-white border-opacity-5">
-                                <i class="bi bi-geo-alt-fill text-danger opacity-90 ms-2"></i>
-                                <span class="text-white small fw-600 opacity-90">{{ r.address }}</span>
-                            </div>
+                            <p class="text-intelligence small m-0">
+                                <i class="bi bi-people-fill text-amber me-2"></i>Estimating ~{{ r.quantity_persons }} person(s) served
+                            </p>
                         </div>
 
-                        <div class="d-flex gap-3 pt-4 border-top border-white border-opacity-5">
+                        <!-- LOCATION PILL -->
+                        <div class="loc-pill">
+                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                            <span>{{ r.address }}</span>
+                        </div>
+
+                        <!-- ACTION ROW -->
+                        <div class="d-flex gap-3 pt-2 border-top border-white border-opacity-5 mt-auto">
                             <button class="btn-mission flex-grow-1" data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}">Accept Mission</button>
-                            <button class="btn btn-sm btn-outline-glass rounded-pill px-3" onclick="this.closest('.mission-ticket').querySelector('.details').classList.toggle('d-none');">Details</button>
+                            <button class="btn-details-glass" onclick="this.closest('.mission-ticket').querySelector('.details-panel').classList.toggle('open'); this.textContent = this.textContent.trim() === 'Details' ? '✕ Close' : 'Details';">Details</button>
                         </div>
 
-                        <!-- 🔍 EXPANDABLE DETAILS -->
-                        <div class="details d-none mt-3 p-3 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-10 fade-in">
-                            <div class="small mb-2"><span class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Yield Details</span></div>
-                            <div class="text-white small mb-3">{{ r.food_type }}</div>
-                            
-                            <div class="small mb-2"><span class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Tactical Coordinates</span></div>
-                            <div class="text-amber fw-bold small mb-2"><i class="bi bi-geo-alt-fill me-1"></i>{{ r.address }}</div>
-                            <iframe width="100%" height="120" class="rounded-3 border-0 opacity-75" src="https://www.google.com/maps?q={{ r.address }}&output=embed"></iframe>
+                        <!-- DETAILS PANEL (FIXED) -->
+                        <div class="details-panel">
+                            <div class="detail-row">
+                                <span class="detail-label">🍱 Food / Yield Details</span>
+                                <span class="detail-value">{{ r.food_type if r.food_type else 'Not specified' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">👥 Estimated Persons Served</span>
+                                <span class="detail-value">~{{ r.quantity_persons }} people</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">📍 Exact Coordinates</span>
+                                <span class="detail-value text-amber">{{ r.address }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">🗺️ Tactical Map</span>
+                                <iframe 
+                                    width="100%" height="140" 
+                                    style="border-radius: 12px; border: 1px solid rgba(245,158,11,0.2); margin-top: 0.5rem;"
+                                    src="https://maps.google.com/maps?q={{ r.address | urlencode }}&output=embed&z=14"
+                                    loading="lazy">
+                                </iframe>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -70,125 +70,18 @@
         }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* 🎫 MISSION TICKETS - TOTAL OVERHAUL */
-        .mission-ticket {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(245, 158, 11, 0.15);
-            border-radius: 28px;
-            padding: 1.75rem;
-            height: 100%;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; gap: 1.25rem;
-            overflow: hidden;
-        }
-        .mission-ticket::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.6), transparent);
-        }
-        .mission-ticket:hover {
-            transform: translateY(-6px);
-            border-color: rgba(245, 158, 11, 0.4);
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.5), 0 0 0 1px rgba(245, 158, 11, 0.1);
-        }
-
-        /* ICON - FIXED */
-        .ticket-icon {
-            width: 52px; height: 52px; border-radius: 16px;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 88, 12, 0.1));
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; color: #f59e0b; flex-shrink: 0;
-        }
-
-        /* 🚚 LOGISTICS CARD */
-        .logistics-card {
-            background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 30px; padding: 2.5rem; backdrop-filter: blur(15px);
-        }
-
-        .btn-mission {
-            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-            color: white; border: none; border-radius: 100px;
-            padding: 14px 24px; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 1.5px; font-size: 0.78rem; transition: all 0.3s;
-        }
-        .btn-mission:hover { transform: scale(1.02); filter: brightness(1.1); }
-
-        .btn-details-glass {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.85);
-            border-radius: 100px; padding: 14px 20px;
-            font-weight: 700; font-size: 0.78rem;
-            letter-spacing: 0.5px; transition: all 0.2s;
-            cursor: pointer;
-        }
-        .btn-details-glass:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(245, 158, 11, 0.4);
-            color: #f59e0b;
-        }
-
-        /* DETAILS PANEL - FIXED */
-        .details-panel {
-            display: none;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 20px;
-            padding: 1.25rem;
-            margin-top: 0.5rem;
-            animation: slideDown 0.3s ease;
-        }
-        .details-panel.open { display: block; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .detail-row {
-            display: flex; flex-direction: column; gap: 0.3rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .detail-label {
-            font-size: 0.6rem; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 2px; color: rgba(245, 158, 11, 0.7);
-        }
-        .detail-value {
-            font-size: 0.88rem; font-weight: 600;
-            color: rgba(255, 255, 255, 0.92);
-            line-height: 1.4;
-        }
+        /* 🎫 MISSION TICKETS - NUCLEAR TACTICAL RESET */
+        /* All styles moved inline for maximum reliability on Vercel */
 
         .label-pro {
             font-weight: 800; text-transform: uppercase; font-size: 0.65rem;
             letter-spacing: 2.5px; color: #94a3b8; margin-bottom: 0.5rem; display: block;
         }
-        /* 📡 TACTICAL BADGES */
-        .badge-tactical {
-            background: rgba(245, 158, 11, 0.12);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            color: #f59e0b; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 1px; padding: 7px 14px; border-radius: 100px;
-            font-size: 0.68rem; white-space: nowrap;
+        
+        .logistics-card {
+            background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 30px; padding: 2.5rem; backdrop-filter: blur(15px);
         }
-        .badge-priority {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.35);
-            color: #ef4444; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 1px; padding: 7px 14px; border-radius: 100px;
-            font-size: 0.68rem;
-        }
-        .text-intelligence { color: rgba(255, 255, 255, 0.65); line-height: 1.6; }
-
-        /* LOCATION PILL */
-        .loc-pill {
-            display: flex; align-items: center; gap: 0.6rem;
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 12px; padding: 0.6rem 0.9rem;
-        }
-        .loc-pill span { color: rgba(255, 255, 255, 0.88); font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
 
         @media (max-width: 991px) {
             .navbar-pro { backdrop-filter: blur(10px); padding: 0.75rem 0; }
@@ -197,10 +90,6 @@
             
             .radar-scanner { height: 300px !important; border-radius: 25px !important; margin-bottom: 2rem !important; }
             .hero-title { font-size: 2.2rem !important; letter-spacing: -1px !important; }
-            
-            .mission-ticket { padding: 1.25rem !important; gap: 1rem !important; }
-            .btn-mission { width: 100% !important; padding: 15px !important; }
-            .btn-details-glass { width: 100% !important; }
             
             .logistics-card { padding: 1.5rem !important; }
             .logistics-card .d-flex { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; }
@@ -259,106 +148,95 @@
 
         <!-- 🎫 MISSION FEED -->
         <div class="mb-4">
-            <span style="font-weight:900;text-transform:uppercase;font-size:0.65rem;letter-spacing:3px;color:#f59e0b;">LIVE DISPATCH FEED</span>
+            <span style="font-weight:900;text-transform:uppercase;font-size:0.65rem;letter-spacing:3px;color:#f59e0b;display:flex;align-items:center;gap:10px;">
+                LIVE DISPATCH FEED <span style="background:#f59e0b;color:#0f172a;padding:2px 8px;border-radius:4px;font-size:0.55rem;">V3.0 PRO</span>
+            </span>
             <h3 style="font-weight:900;color:white;font-size:1.8rem;letter-spacing:-1px;margin-top:4px;">Active Rescue Missions</h3>
         </div>
 
         <div class="row g-4 mb-5">
             {% for r in active_rescues %}
-                {% if not r.is_expired and r.status == 'Urgent' %}
                 <div class="col-lg-6">
-                    <div class="ticket-wrap" style="background:linear-gradient(145deg,#1e293b,#0f172a);border:1px solid rgba(245,158,11,0.2);border-radius:24px;padding:1.5rem;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:1rem;">
-                        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#f59e0b,transparent);"></div>
+                    <div style="background:linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(245,158,11,0.25); border-radius: 26px; padding: 1.75rem; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                        <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, #f59e0b, #ea580c, transparent); opacity:0.8;"></div>
 
-                        <!-- HEADER -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
-                            <div style="display:flex;align-items:center;gap:0.85rem;">
-                                <div style="width:48px;height:48px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(234,88,12,0.15));border:1px solid rgba(245,158,11,0.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🍱</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div style="display:flex; align-items:center; gap:1rem;">
+                                <div style="width:54px; height:54px; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.4); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">🚨</div>
                                 <div>
-                                    <div style="font-size:0.58rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(245,158,11,0.65);margin-bottom:2px;">Event Type</div>
-                                    <div style="font-size:1.1rem;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1.2;">{{ r.event_type }}</div>
+                                    <div style="font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin-bottom:4px;">DISPATCH EVENT</div>
+                                    <h4 style="color:white; font-weight:900; margin:0; font-size:1.25rem; letter-spacing:-0.5px;">{{ r.event_type }}</h4>
                                 </div>
                             </div>
-                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0;">
-                                <span style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;font-weight:900;text-transform:uppercase;padding:5px 12px;border-radius:100px;font-size:0.65rem;white-space:nowrap;">⏱ {{ r.hours_remaining }}h LEFT</span>
-                                <span style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#ef4444;font-weight:900;text-transform:uppercase;padding:5px 12px;border-radius:100px;font-size:0.65rem;">⚡ CRITICAL</span>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
+                                <div style="background:rgba(239,68,68,0.15); border:1px solid #ef444466; color:#ef4444; padding:5px 12px; border-radius:100px; font-size:0.65rem; font-weight:900; text-transform:uppercase; letter-spacing:1px; animation: pulse 2s infinite;">⚡ CRITICAL</div>
+                                <div style="color:#f59e0b; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;">⏱ {{ r.hours_remaining }}h Remaining</div>
                             </div>
                         </div>
 
-                        <!-- PERSONS -->
-                        <div style="color:rgba(255,255,255,0.6);font-size:0.85rem;">
-                            👥 Feeds approximately <strong style="color:rgba(255,255,255,0.9);">{{ r.quantity_persons }}</strong> individuals
+                        <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="color:#cbd5e1; font-size:0.88rem; line-height:1.5;">
+                                Mission logistics ready to serve <strong style="color:#f59e0b;">{{ r.quantity_persons }}+</strong> individuals with fresh yield of <span style="color:white; font-weight:600;">{{ r.food_type or "High-Quality Surplus" }}</span>.
+                            </div>
                         </div>
 
-                        <!-- LOCATION -->
-                        <div style="display:flex;align-items:center;gap:0.6rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:0.6rem 0.9rem;">
-                            <span style="color:#ef4444;font-size:0.9rem;">📍</span>
-                            <span style="color:rgba(255,255,255,0.9);font-size:0.83rem;font-weight:600;">{{ r.address }}</span>
+                        <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); padding:0.75rem 1rem; border-radius:16px;">
+                            <span style="font-size:1.2rem;">📍</span>
+                            <div style="color:#f1f5f9; font-size:0.82rem; font-weight:700; line-height:1.4;">{{ r.address }}</div>
                         </div>
 
-                        <!-- ACTIONS -->
-                        <div style="display:flex;gap:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.06);">
-                            <button data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}"
-                                style="flex:1;background:linear-gradient(135deg,#f59e0b,#ea580c);color:white;border:none;border-radius:100px;padding:13px 20px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;font-size:0.75rem;cursor:pointer;">
+                        <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+                            <button data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}" style="flex:2; background:linear-gradient(135deg, #f59e0b, #ea580c); color:white; border:none; border-radius:14px; padding:12px; font-weight:900; text-transform:uppercase; letter-spacing:1px; font-size:0.75rem; cursor:pointer;">
                                 Accept Mission
                             </button>
-                            <button onclick="var p=this.closest('.ticket-wrap').querySelector('.slip-details');p.style.display=p.style.display==='block'?'none':'block';this.textContent=p.style.display==='block'?'✕ Close':'Details';"
-                                style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);border-radius:100px;padding:13px 18px;font-weight:700;font-size:0.78rem;cursor:pointer;">
-                                Details
+                            <button onclick="var p=this.parentNode.nextElementSibling; p.style.display=p.style.display=='none'?'block':'none'; this.textContent=p.style.display=='none'?'View Details':'✕ Close';" style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:white; border-radius:14px; padding:12px; font-weight:700; font-size:0.75rem; cursor:pointer;">
+                                View Details
                             </button>
                         </div>
 
-                        <!-- DETAILS PANEL -->
-                        <div class="slip-details" style="display:none;background:rgba(0,0,0,0.35);border:1px solid rgba(245,158,11,0.18);border-radius:16px;padding:1rem;">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
-                                <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;">
-                                    <div style="font-size:0.56rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(245,158,11,0.65);margin-bottom:4px;">🍱 Food Type</div>
-                                    <div style="color:rgba(255,255,255,0.92);font-size:0.83rem;font-weight:700;">{{ r.food_type or 'Not specified' }}</div>
+                        <div style="display:none; background:rgba(0,0,0,0.25); border-radius:16px; padding:1rem; border:1px solid rgba(255,255,255,0.05); margin-top:-0.5rem;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                                <div style="background:rgba(255,255,255,0.03); padding:0.75rem; border-radius:12px;">
+                                    <div style="font-size:0.55rem; font-weight:900; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">Quantity</div>
+                                    <div style="color:white; font-weight:700; font-size:0.85rem;">{{ r.quantity_persons }} Persons</div>
                                 </div>
-                                <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;">
-                                    <div style="font-size:0.56rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(245,158,11,0.65);margin-bottom:4px;">👥 Persons Fed</div>
-                                    <div style="color:rgba(255,255,255,0.92);font-size:0.83rem;font-weight:700;">~{{ r.quantity_persons }}</div>
+                                <div style="background:rgba(255,255,255,0.03); padding:0.75rem; border-radius:12px;">
+                                    <div style="font-size:0.55rem; font-weight:900; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">Contact</div>
+                                    <div style="color:white; font-weight:700; font-size:0.85rem;">{{ r.contact_number }}</div>
                                 </div>
                             </div>
-                            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;margin-bottom:0.75rem;">
-                                <div style="font-size:0.56rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(245,158,11,0.65);margin-bottom:4px;">📍 Exact Address</div>
-                                <div style="color:#f59e0b;font-size:0.83rem;font-weight:700;">{{ r.address }}</div>
-                            </div>
-                            <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(245,158,11,0.2);">
-                                <iframe width="100%" height="150" frameborder="0" style="display:block;"
-                                    src="https://maps.google.com/maps?q={{ r.address | urlencode }}&output=embed&z=14" loading="lazy"></iframe>
+                            <div style="border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);">
+                                <iframe width="100%" height="150" frameborder="0" src="https://maps.google.com/maps?q={{ r.address | urlencode }}&output=embed&z=14"></iframe>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
                 <!-- Acceptance Modal -->
                 <div class="modal fade" id="claimModal-{{ r.id }}" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content bg-dark text-white p-4 rounded-4 border-secondary">
+                        <div class="modal-content bg-dark text-white p-4 rounded-4 border-secondary shadow-lg">
                             <div class="modal-header border-0">
-                                <h3 class="fw-900 text-amber m-0">Confirm Dispatch</h3>
+                                <h3 style="font-weight:900; color:#f59e0b; margin:0;">Confirm Dispatch</h3>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
                                 <form action="{{ url_for('food_rescue.claim_rescue') }}" method="POST">
                                     <input type="hidden" name="rescue_id" value="{{ r.id }}">
                                     <div class="mb-4">
-                                        <label class="label-pro">Operational ETA</label>
+                                        <div style="font-size:0.6rem; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:2px; margin-bottom:12px;">Operational ETA</div>
                                         <select class="form-select bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-3 p-3 fw-bold" name="eta_minutes" required>
                                             <option value="15" selected>15 Minutes (Rapid)</option>
                                             <option value="30">30 Minutes (Standard)</option>
                                             <option value="60">1 Hour (Bulk)</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn-mission w-100 py-3 fs-5">Authorize Pickup</button>
+                                    <button type="submit" style="background:linear-gradient(135deg, #f59e0b, #ea580c); color:white; border:none; border-radius:14px; padding:15px; width:100%; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">Authorize Pickup</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endif %}
             {% endfor %}
         </div>
 

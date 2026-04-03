@@ -33,15 +33,21 @@
             color: var(--dark);
         }
 
-        /* NAVBAR */
-        .navbar {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
+        /* 🟦 PRO NAVBAR */
+        .navbar-pro {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .nav-link-pro {
+            color: #475569; font-weight: 700; font-size: 0.9rem; text-decoration: none;
+            padding: 0.5rem 1rem; border-radius: 100px; transition: all 0.2s;
+            display: inline-block;
+        }
+        .nav-link-pro:hover, .nav-link-pro.active-link {
+            color: var(--primary); background: rgba(79, 70, 229, 0.05);
         }
 
         /* HERO HEADER */
@@ -416,6 +422,41 @@
             padding: 0.25rem 0.625rem;
             border-radius: 100px;
         }
+
+        @media (max-width: 991px) {
+            .navbar-pro { backdrop-filter: blur(8px); padding: 0.75rem 0; }
+            .navbar-collapse { background: white !important; margin-top: 1rem; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+            .navbar-collapse.show { display: block !important; }
+            .nav-link-pro { width: 100%; padding: 12px 20px; border-radius: 12px; margin-bottom: 8px; display: block; }
+
+            .page-hero { padding: 50px 0 70px !important; border-radius: 0 0 30px 30px !important; text-align: center; }
+            .page-hero h1 { font-size: 2.2rem !important; }
+            
+            .stats-float { margin-top: -30px !important; margin-bottom: 2rem !important; }
+            .stats-float .row { flex-direction: column; gap: 1rem; }
+            .stats-float .col-4 { width: 100% !important; }
+            .stat-pill { padding: 1.25rem !important; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+            .stat-num { font-size: 2rem !important; margin-bottom: 0 !important; }
+            .stat-desc { margin-top: 0 !important; }
+
+            .donation-card { border-radius: 20px !important; margin-bottom: 1.25rem !important; }
+            .card-content { padding: 1.25rem !important; }
+            .donation-card .d-flex.align-items-start.gap-3 { flex-direction: column !important; }
+            .item-thumb, .item-thumb-placeholder { width: 100% !important; height: 180px !important; border-radius: 15px !important; }
+
+            /* 🛤️ VERTICAL JOURNEY OVERRIDE */
+            .journey { flex-direction: column !important; gap: 1.5rem !important; padding-left: 20px !important; margin-top: 2rem !important; }
+            .journey::before { left: 37px !important; top: 0 !important; bottom: 0 !important; width: 2px !important; height: 100% !important; }
+            .j-step { flex-direction: row !important; align-items: center !important; gap: 1.5rem !important; width: 100% !important; }
+            .j-label { margin-top: 0 !important; font-size: 0.8rem !important; text-align: left !important; }
+            .j-circle { flex-shrink: 0 !important; width: 34px !important; height: 34px !important; }
+
+            .ngo-bar { padding: 1.25rem !important; flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+            .ngo-bar .text-end { text-align: left !important; }
+            .btn-cert, .btn-track { width: 100% !important; justify-content: center !important; padding: 12px 20px !important; }
+            
+            .live-alert { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+        }
     </style>
 
     <!-- Vercel Web Analytics -->
@@ -427,41 +468,30 @@
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg">
+    <!-- 🟦 PRO NAVBAR -->
+    <nav class="navbar-pro navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.home') }}"
-                style="font-size:1.4rem; letter-spacing:-0.5px;">
-                <i class="bi bi-box2-heart-fill"></i> DonateWise
-            </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-                <ul class="navbar-nav align-items-center gap-1">
-                    <li class="nav-item">
-                        <a href="{{ url_for('main.home') }}" class="nav-link fw-semibold text-muted">
-                            <i class="bi bi-house me-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ url_for('main.donate') }}" class="nav-link fw-semibold text-muted">
-                            <i class="bi bi-plus-circle me-1"></i>New Donation
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ url_for('main.profile') }}" class="nav-link fw-semibold text-muted">
-                            <i class="bi bi-person-circle me-1"></i>Profile
-                        </a>
-                    </li>
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <a class="text-dark text-decoration-none fw-900 h4 m-0" href="{{ url_for('main.home') }}">
+                    <i class="bi bi-box2-heart-fill text-primary me-2"></i>DonateWise
+                </a>
+                <button class="navbar-toggler border-0 shadow-none d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                    <i class="bi bi-list fs-1 text-dark"></i>
+                </button>
+            </div>
+            
+            <div class="collapse navbar-collapse" id="navMenu">
+                <div class="d-lg-flex gap-2 mx-auto mt-3 mt-lg-0">
+                    <a href="{{ url_for('main.home') }}" class="nav-link-pro">Home</a>
+                    <a href="{{ url_for('main.donate') }}" class="nav-link-pro">Donate Now</a>
+                    <a href="{{ url_for('main.history') }}" class="nav-link-pro active-link">My Journey</a>
+                    <a href="{{ url_for('main.profile') }}" class="nav-link-pro">Profile</a>
+                </div>
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mt-3 mt-lg-0 border-top pt-3 border-lg-0 pt-lg-0">
                     {% if session.get('user_id') or session.get('ngo_id') %}
-                    <li class="nav-item">
-                        <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-lg-2 fw-semibold">
-                            Logout
-                        </a>
-                    </li>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold">Logout</a>
                     {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
     </nav>

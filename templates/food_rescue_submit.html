@@ -1,172 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Report Surplus Event Food | DonateWise</title>
+    <title>Report Surplus Event Food | DonateWise Pro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<style>
-    body {
-        background-color: #f8fafc;
-        color: #0f172a;
-    }
-    
-    .form-hero {
-        background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.15) 0%, transparent 60%), #ffffff;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 60px 0 40px;
-    }
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --accent: #ef4444;
+            --dark: #0f172a;
+            --slate: #1e293b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.03) 0%, transparent 20%);
+            min-height: 100vh;
+        }
 
-    .glass-header {
-        background: linear-gradient(135deg, #f59e0b, #ef4444);
-        padding: 30px;
-        color: white;
-        text-align: center;
-    }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
-    .form-control, .form-select {
-        border-radius: 12px;
-        padding: 12px 15px;
-        border: 2px solid #e2e8f0;
-        transition: all 0.2s;
-    }
+        /* 🌐 GLASS NAVBAR */
+        .navbar-pro {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: sticky; top: 0; z-index: 1000;
+        }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #f59e0b;
-        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
-    }
-    
-    .pledge-box {
-        background: rgba(239, 68, 68, 0.05);
-        border: 1px dashed #ef4444;
-        border-radius: 15px;
-        padding: 20px;
-    }
+        .form-hero { padding: 60px 0 40px; text-align: center; }
 
-    .badge-pro {
-        background: #1e293b;
-        color: #f59e0b;
-        letter-spacing: 1px;
-    }
-</style>
+        .badge-pro {
+            background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border);
+            color: var(--primary); font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 0.7rem; padding: 8px 16px; border-radius: 100px;
+        }
 
-<div class="form-hero text-center">
-    <div class="container">
-        <span class="badge badge-pro px-3 py-2 rounded-pill fs-6 mb-3">
-            <i class="bi bi-shield-check"></i> Genuine Donors Only
-        </span>
-        <h1 class="fw-bold" style="font-family: 'Playfair Display', serif;">Rescue Leftover Food</h1>
-        <p class="text-secondary max-w-md mx-auto">Fill out this fast-track form. Once submitted, NGOs in the area will be alerted immediately via the Live Radar.</p>
-    </div>
-</div>
+        /* 🎫 PREMIUM GLASS FORM */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border); border-radius: 40px;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+            overflow: hidden; animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-<div class="container mb-5" style="margin-top: -30px;">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="form-card">
-                <div class="glass-header">
-                    <h3 class="fw-bold m-0"><i class="bi bi-lightning-charge-fill me-2"></i> Mega Dispatch Form</h3>
-                </div>
-                
-                <div class="p-5">
-                    <form action="{{ url_for('food_rescue.submit_rescue') }}" method="POST">
-                        <div class="row g-4">
-                            <!-- Event Details -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary">Type of Event / Function</label>
-                                <select class="form-select fw-bold" name="event_type" required>
-                                    <option value="" disabled selected>Select event...</option>
-                                    <option value="Wedding">💍 Wedding</option>
-                                    <option value="Birthday Party">🎂 Birthday Party</option>
-                                    <option value="Bhandara / Pooja">🙏 Bhandara / Pooja</option>
-                                    <option value="Corporate Event">🏢 Corporate Event</option>
-                                    <option value="Other Mass Gathering">👥 Other Mass Gathering</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary">Food Condition</label>
-                                <select class="form-select fw-bold" name="food_type" required>
-                                    <option value="Cooked (Prepared today)">🍲 Cooked (Prepared today)</option>
-                                    <option value="Raw Materials / Groceries">🥕 Raw Materials / Groceries</option>
-                                    <option value="Packaged Items">📦 Packaged Snacks/Meals</option>
-                                </select>
-                            </div>
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary">Approx. Quantity (Meals/Persons)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-people-fill text-muted"></i></span>
-                                    <input type="number" name="quantity_persons" class="form-control border-start-0 ps-0" placeholder="e.g. 50" min="10" required>
-                                </div>
-                                <div class="form-text">Minimum 10 persons for bulk dispatch.</div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary">Perishable Timeline</label>
-                                <select class="form-select fw-bold text-danger" name="best_before_hours" required>
-                                    <option value="" disabled selected>Must be consumed within...</option>
-                                    <option value="2">⏳ 2 Hours (Highly Urgent)</option>
-                                    <option value="4">⏳ 4 Hours</option>
-                                    <option value="8">⏳ 8 Hours</option>
-                                    <option value="24">⏳ Next 24 Hours</option>
-                                </select>
-                            </div>
+        .card-header-pro {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            padding: 40px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-secondary">Exact Pickup Address</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt-fill text-danger"></i></span>
-                                    <input type="text" name="address" class="form-control border-start-0 ps-0" placeholder="Venue name, detailed location map link or full address..." required>
-                                </div>
-                            </div>
+        .form-label-pro {
+            font-weight: 800; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 1.5px; color: #94a3b8; margin-bottom: 0.75rem; display: block;
+        }
 
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-secondary">Direct Contact Number (Mandatory)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">+91</span>
-                                    <input type="tel" name="contact_number" class="form-control border-start-0 ps-0" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
-                                </div>
-                                <div class="form-text text-success"><i class="bi bi-lock-fill"></i> Your number is only shared with the verified NGO who accepts this dispatch.</div>
-                            </div>
+        .input-group-pro {
+            background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px; overflow: hidden; display: flex; align-items: center; padding: 0 20px;
+        }
+        .input-group-pro:focus-within {
+            border-color: var(--primary); background: rgba(255, 255, 255, 0.06);
+        }
 
-                            <!-- Quality Pledge -->
-                            <div class="col-12 mt-4">
-                                <div class="pledge-box">
-                                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-shield-exclamation me-2"></i> Quality Assurance Pledge</h5>
-                                    <div class="form-check form-switch fs-5">
-                                        <input class="form-check-input" type="checkbox" role="switch" id="pledgeSwitch" name="pledge_accepted" required>
-                                        <label class="form-check-label fs-6 ms-2 text-dark" for="pledgeSwitch">
-                                            I solemnly swear that this food is fresh, untouched, and completely safe for human consumption. I understand that submitting spoiled food is strictly prohibited and can cause harm to vulnerable people.
-                                        </label>
+        .input-pro {
+            flex: 1; background: transparent; border: none;
+            color: white; padding: 16px 15px; font-weight: 500; outline: none !important;
+        }
+
+        .select-pro {
+            width: 100%; background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px; color: white; padding: 16px 20px; font-weight: 600;
+            appearance: none; cursor: pointer; border: none; outline: none;
+        }
+        /* Style wrapper for Select to add Bi-icon */
+        .select-wrap { position: relative; }
+        .select-wrap::after {
+            content: '\F229'; font-family: "bootstrap-icons"; position: absolute;
+            right: 20px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.5;
+        }
+
+        /* 📜 PLEDGE DESIGN */
+        .pledge-section {
+            background: rgba(239, 68, 68, 0.05); border: 1px dashed rgba(239, 68, 68, 0.3);
+            border-radius: 25px; padding: 30px; margin-top: 2rem;
+        }
+
+        .btn-dispatch {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: white; border: none; border-radius: 100px;
+            padding: 20px; font-weight: 900; font-size: 1.2rem; width: 100%;
+            margin-top: 1rem; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .btn-dispatch:hover {
+            transform: translateY(-5px); box-shadow: 0 30px 60px -15px rgba(245, 158, 11, 0.6);
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar-pro">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('main.home') }}" class="text-white text-decoration-none fw-900 h4 m-0">
+                <i class="bi bi-box2-heart-fill text-amber me-2"></i>DonateWise
+            </a>
+            <div class="d-none d-md-flex gap-2">
+                <a href="{{ url_for('food_rescue.landing') }}" class="btn btn-outline-light btn-sm rounded-pill px-4 fw-bold">Back to Rescue Channel</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="form-hero">
+        <div class="container">
+            <div class="badge-pro mb-3"><i class="bi bi-shield-lock-fill me-2"></i> Verified Dispatch Channel</div>
+            <h1 class="hero-title" style="font-size: 3rem; font-weight: 900; letter-spacing: -2px;">Launch <span class="text-amber">Mega Rescue</span></h1>
+            <p class="text-secondary mx-auto" style="max-width: 600px;">
+                Complete this manifest to initiate a live broadcast to nearby NGO rescue teams. 
+            </p>
+        </div>
+    </section>
+
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <div class="card-header-pro">
+                        <h2 class="fw-900 text-white m-0 h4">Rescue Manifest</h2>
+                    </div>
+
+                    <div class="p-4 p-md-5">
+                        <form action="{{ url_for('food_rescue.submit_rescue') }}" method="POST">
+                            <div class="row g-4 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label-pro">Event Category</label>
+                                    <div class="select-wrap">
+                                        <select class="select-pro" name="event_type" required>
+                                            <option value="" disabled selected>Select event...</option>
+                                            <option value="Wedding">💍 Wedding</option>
+                                            <option value="Birthday Party">🎂 Birthday Party</option>
+                                            <option value="Corporate Event">🏢 Corporate Event</option>
+                                            <option value="Bhandara / Pooja">🙏 Bhandara / Community Feast</option>
+                                            <option value="Other">👥 Other Bulk Gathering</option>
+                                        </select>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-pro">Food State</label>
+                                    <div class="select-wrap">
+                                        <select class="select-pro" name="food_type" required>
+                                            <option value="Cooked (Prepared today)">🍲 Cooked (Today)</option>
+                                            <option value="Raw Materials / Groceries">🥕 Raw / Bulk Groceries</option>
+                                            <option value="Packaged Items">📦 Packaged / Sealed</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div class="col-12 mt-4 text-center">
-                                <button type="submit" class="btn btn-lg w-100 py-3 rounded-pill fw-bold text-white shadow" style="background: linear-gradient(135deg, #ef4444, #f97316); font-size: 1.1rem;">
-                                    <i class="bi bi-send-fill me-2"></i> Dispatch Live Alert to NGOs
-                                </button>
-                                <a href="{{ url_for('food_rescue.landing') }}" class="btn btn-link text-muted mt-3 text-decoration-none">Cancel Request</a>
+                                <div class="col-md-6">
+                                    <label class="form-label-pro">Quantity Estimate</label>
+                                    <div class="input-group-pro">
+                                        <i class="bi bi-people-fill text-muted me-2"></i>
+                                        <input type="number" name="quantity_persons" class="input-pro" placeholder="e.g. 100 persons" min="10" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-pro">Urgency Window</label>
+                                    <div class="select-wrap">
+                                        <select class="select-pro text-danger" name="best_before_hours" required>
+                                            <option value="" disabled selected>Perishes in...</option>
+                                            <option value="2">⏳ 2 Hours (Critical)</option>
+                                            <option value="4">⌛ 4 Hours</option>
+                                            <option value="8">🌗 8 Hours</option>
+                                            <option value="24">📅 24 Hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label-pro">Geographic Pickup Address</label>
+                                    <div class="input-group-pro">
+                                        <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                        <input type="text" name="address" class="input-pro" placeholder="Venue name, Floor, Nearest Landmark..." required>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label-pro">Dispatch Contact</label>
+                                    <div class="input-group-pro">
+                                        <span class="text-muted fw-bold me-2">+91</span>
+                                        <input type="tel" name="contact_number" class="input-pro" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="pledge-section">
+                                        <div class="d-flex align-items-center gap-3 mb-3">
+                                            <i class="bi bi-shield-fill-check text-success fs-3"></i>
+                                            <h5 class="fw-900 m-0 text-white">Quality Guarantee</h5>
+                                        </div>
+                                        <div class="form-check form-switch fs-5">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="pledgeSwitch" name="pledge_accepted" required>
+                                            <label class="form-check-label fs-6 ms-2 text-secondary" for="pledgeSwitch">
+                                                I certify that this food is fresh and safe for consumption. I understand that donating spoiled food is strictly prohibited.
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-center mt-5">
+                                    <button type="submit" class="btn-dispatch">
+                                        <i class="bi bi-lightning-charge-fill"></i> Execute Live Broadcast
+                                    </button>
+                                    <a href="{{ url_for('food_rescue.landing') }}" class="btn btn-link text-secondary mt-3 text-decoration-none">Abort Request</a>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -1,237 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Live Food Radar | DonateWise</title>
+    <title>Live Food Radar | DonateWise Pro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<style>
-    body {
-        background-color: #0f172a;
-        color: #f8fafc;
-    }
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --accent: #ef4444;
+            --success: #10b981;
+            --dark: #0f172a;
+            --slate: #1e293b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-    .radar-header {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 40px 0 20px;
-        background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.03) 0%, transparent 20%);
+            min-height: 100vh;
+        }
 
-    .glass-card {
-        background: rgba(30, 41, 59, 0.6);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        transition: all 0.3s ease;
-    }
-    
-    .glass-card:hover {
-        border-color: rgba(245, 158, 11, 0.4);
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
-    .pulsing-dot {
-        width: 12px;
-        height: 12px;
-        background-color: #ef4444;
-        border-radius: 50%;
-        display: inline-block;
-        box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
-        animation: pulse 2s infinite;
-    }
+        /* 🌐 GLASS NAVBAR */
+        .navbar-pro {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: sticky; top: 0; z-index: 1000;
+        }
 
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    }
 
-    .timer-alert {
-        font-family: monospace;
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #f59e0b;
-        background: rgba(245, 158, 11, 0.1);
-        padding: 4px 10px;
-        border-radius: 8px;
-        border: 1px solid rgba(245, 158, 11, 0.2);
-    }
+        .pulsing-status {
+            width: 12px; height: 12px;
+            background: var(--accent); border-radius: 50%;
+            display: inline-block; box-shadow: 0 0 15px var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
 
-    .badge-claim {
-        background: #10b981;
-        color: white;
-    }
+        /* 🧭 RADAR SCANNER */
+        .radar-scanner {
+            position: relative; width: 100%; height: 400px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            border-radius: 40px; border: 1px solid var(--glass-border);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 4rem;
+        }
+        .radar-line {
+            position: absolute; width: 50%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary));
+            top: 50%; left: 50%; transform-origin: left center;
+            animation: rotate 4s linear infinite;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* PRO RADAR ENHANCEMENTS */
-    .radar-container {
-        position: relative;
-        background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-        border-radius: 24px;
-        padding: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        min-height: 400px;
-    }
-    
-    .rescue-ticket {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-left: 4px solid #f59e0b;
-        border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .rescue-ticket:hover {
-        background: rgba(255, 255, 255, 0.07);
-        transform: translateX(5px);
-        border-left-width: 6px;
-    }
+        /* 🎫 MISSION TICKETS */
+        .mission-ticket {
+            background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 30px;
+            padding: 2rem; height: 100%; position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .mission-ticket:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(30, 41, 59, 0.6); border-color: rgba(245, 158, 11, 0.4);
+        }
 
-    .eta-badge {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background: rgba(245, 158, 11, 0.2);
-        color: #fca311;
-        padding: 4px 12px;
-        border-radius: 100px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-</style>
+        /* 🚚 LOGISTICS CARD */
+        .logistics-card {
+            background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 30px; padding: 2.5rem; backdrop-filter: blur(15px);
+        }
 
-<div class="radar-header">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div>
-            <h2 class="fw-bold m-0"><span class="pulsing-dot me-2"></span> Active Food Radar</h2>
-            <p class="text-secondary mt-1 mb-0">Live monitoring of mass food surplus across the city.</p>
-        </div>
-        <a href="{{ url_for('main.ngo_dashboard') }}" class="btn btn-outline-secondary rounded-pill">Back to Dashboard</a>
-    </div>
-</div>
+        .btn-mission {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: white; border: none; border-radius: 100px;
+            padding: 12px 24px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; font-size: 0.8rem;
+        }
+        .btn-outline-glass {
+            background: transparent; border: 1px solid var(--glass-border);
+            color: white; border-radius: 100px; padding: 12px 24px;
+            font-weight: 600; backdrop-filter: blur(10px);
+        }
 
-<div class="container py-5">
-    <!-- Active Urgent Board -->
-    <h4 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Urgent Rescues Available</h4>
-    <div class="row g-4 mb-5">
-        {% for r in active_rescues %}
-            {% if not r.is_expired and r.status == 'Urgent' %}
-            <div class="col-lg-6">
-                <div class="rescue-ticket d-flex align-items-center gap-4">
-                    <div class="text-center" style="min-width: 80px;">
-                        <div class="display-6 mb-0">🍱</div>
-                        <div class="eta-badge mt-2">{{ r.hours_remaining }}h left</div>
+        .label-pro {
+            font-weight: 800; text-transform: uppercase; font-size: 0.65rem;
+            letter-spacing: 2px; color: #64748b; margin-bottom: 0.5rem; display: block;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-pro { backdrop-filter: blur(10px); padding: 0.75rem 0; }
+            .navbar-collapse { background: #1e293b !important; margin-top: 1rem; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--glass-border); display: none; }
+            .navbar-collapse.show { display: block !important; }
+            
+            .radar-scanner { height: 300px !important; border-radius: 25px !important; margin-bottom: 2rem !important; }
+            .hero-title { font-size: 2.2rem !important; letter-spacing: -1px !important; }
+            
+            .mission-ticket { padding: 1.5rem !important; gap: 1.25rem !important; flex-direction: column !important; }
+            .btn-mission { width: 100% !important; padding: 15px !important; }
+            .btn-outline-glass { width: 100% !important; }
+            
+            .logistics-card { padding: 1.5rem !important; }
+            .logistics-card .d-flex { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; }
+            .logistics-card .d-flex.gap-5 { gap: 1.25rem !important; margin-top: 0.5rem !important; flex-direction: column !important; }
+            .logistics-card form, .logistics-card button { width: 100% !important; }
+            .mission-ticket .d-flex.gap-3 { flex-direction: column !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar-pro navbar-expand-lg">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <a href="{{ url_for('main.home') }}" class="text-white text-decoration-none fw-900 h4 m-0">
+                    <i class="bi bi-box2-heart-fill text-amber me-2"></i>DonateWise
+                </a>
+                <button class="navbar-toggler border-0 shadow-none d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#ngoNav">
+                    <i class="bi bi-list fs-1 text-white"></i>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="ngoNav">
+                <div class="d-lg-flex align-items-center gap-4 ms-auto mt-3 mt-lg-0">
+                    <div class="d-flex align-items-center gap-2 mb-3 mb-lg-0">
+                        <span class="pulsing-status"></span>
+                        <span class="small fw-bold text-secondary">LIVE FEED ACTIVE</span>
                     </div>
-                    
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h5 class="fw-bold text-white mb-0">{{ r.event_type }} Surprise</h5>
-                            <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.65rem;">URGENT DISPATCH</span>
+                    <a href="{{ url_for('main.ngo_dashboard') }}" class="btn btn-outline-light btn-sm rounded-pill px-4 fw-bold">NGO Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        
+        <header class="mb-5">
+            <h1 class="hero-title fw-900 text-white" style="font-size: 3rem; letter-spacing: -2px;">Mission Control <span class="text-amber">Radar</span></h1>
+            <p class="text-secondary">Monitoring high-priority event surpluses across your sector.</p>
+        </header>
+
+        <!-- 🛰️ SCANNER VIEW -->
+        <section class="radar-scanner">
+            <div class="radar-line"></div>
+            <div class="text-center" style="z-index: 10;">
+                {% if active_rescues|length == 0 %}
+                    <i class="bi bi-radar text-secondary opacity-20" style="font-size: 8rem;"></i>
+                    <h3 class="fw-800 text-secondary mt-3">Scan Complete</h3>
+                    <p class="text-muted small">No bulk surpluses detected.</p>
+                {% else %}
+                    <div class="badge bg-warning text-dark px-4 py-2 rounded-pill fw-900 shadow-lg">
+                        <i class="bi bi-lightning-charge-fill me-2"></i> {{ active_rescues|length }} SIGNALS DETECTED
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- 🎫 MISSION FEED -->
+        <div class="mb-4">
+            <span class="label-pro">Satellite Board</span>
+            <h3 class="fw-900 text-white">Incoming Dispatches</h3>
+        </div>
+
+        <div class="row g-4 mb-5">
+            {% for r in active_rescues %}
+                {% if not r.is_expired and r.status == 'Urgent' %}
+                <div class="col-lg-6">
+                    <div class="mission-ticket">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="p-3 bg-white bg-opacity-5 rounded-4"><i class="bi bi-cup-hot text-amber fs-4"></i></div>
+                            <span class="badge bg-primary bg-opacity-20 text-primary rounded-pill px-3 py-2 small fw-bold">{{ r.hours_remaining }}h LEFT</span>
                         </div>
-                        <p class="text-secondary small mb-2"><i class="bi bi-people-fill me-1"></i> Serves {{ r.quantity_persons }} persons &bull; <i class="bi bi-geo-alt-fill text-danger mx-1"></i> {{ r.address }}</p>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-warning fw-bold rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}">
-                                <i class="bi bi-lightning-charge-fill me-1"></i> Accept Now
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 text-white" onclick="alert('Food Items: {{ r.food_type }}')">
-                                Details
-                            </button>
+
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h4 class="fw-900 text-white m-0 h5">{{ r.event_type }}</h4>
+                                <span class="badge bg-danger bg-opacity-20 text-danger rounded-pill px-2 py-1 small" style="font-size: 0.6rem;">HIGH PRIORITY</span>
+                            </div>
+                            <p class="text-muted small mb-3"><i class="bi bi-people-fill me-1"></i> Serves ~{{ r.quantity_persons }} persons</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-geo-alt-fill text-danger opacity-75"></i>
+                                <span class="text-secondary small">{{ r.address }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 pt-4 border-top border-white border-opacity-5">
+                            <button class="btn-mission flex-grow-1" data-bs-toggle="modal" data-bs-target="#claimModal-{{ r.id }}">Accept Mission</button>
+                            <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="alert('Details: {{ r.food_type }}')">Details</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Acceptance Modal (Modernized) -->
-            <div class="modal fade" id="claimModal-{{ r.id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content bg-dark text-white border-secondary">
-                        <div class="modal-header border-secondary">
-                            <h5 class="modal-title fw-bold text-warning"><i class="bi bi-truck me-2"></i>Dispatch Protocol</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <!-- Acceptance Modal -->
+                <div class="modal fade" id="claimModal-{{ r.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white p-4 rounded-4 border-secondary">
+                            <div class="modal-header border-0">
+                                <h3 class="fw-900 text-amber m-0">Confirm Dispatch</h3>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('food_rescue.claim_rescue') }}" method="POST">
+                                    <input type="hidden" name="rescue_id" value="{{ r.id }}">
+                                    <div class="mb-4">
+                                        <label class="label-pro">Operational ETA</label>
+                                        <select class="form-select bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-3 p-3 fw-bold" name="eta_minutes" required>
+                                            <option value="15" selected>15 Minutes (Rapid)</option>
+                                            <option value="30">30 Minutes (Standard)</option>
+                                            <option value="60">1 Hour (Bulk)</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn-mission w-100 py-3 fs-5">Authorize Pickup</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="modal-body p-4">
-                            <div class="d-flex align-items-center gap-4 mb-4">
-                                <div class="bg-warning text-dark p-3 rounded-4 display-6">🚛</div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- 🚚 ACTIVE LOGISTICS -->
+        <h3 class="fw-900 text-white mt-5 mb-4">My Active Dispatches</h3>
+        <div class="row">
+            {% for m in my_claims %}
+                {% if m.status == 'Claimed' %}
+                <div class="col-12 mb-4">
+                    <div class="logistics-card">
+                        <div class="d-flex justify-content-between flex-wrap gap-4 align-items-center">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="p-3 bg-success bg-opacity-10 rounded-circle"><i class="bi bi-truck text-success fs-3"></i></div>
                                 <div>
-                                    <h4 class="mb-0 fw-bold">Accept Mission</h4>
-                                    <p class="text-secondary small mb-0">Event for {{ r.quantity_persons }} hungry souls</p>
+                                    <h4 class="fw-900 text-white m-0 h5">{{ m.event_type }}</h4>
+                                    <span class="badge bg-success bg-opacity-20 text-success rounded-pill mt-2">EN ROUTE | ETA {{ m.eta_minutes }}m</span>
                                 </div>
                             </div>
-                            
-                            <form action="{{ url_for('food_rescue.claim_rescue') }}" method="POST">
-                                <input type="hidden" name="rescue_id" value="{{ r.id }}">
-                                <div class="mb-4">
-                                    <label class="form-label text-secondary small fw-bold text-uppercase">Logistics: Your ETA</label>
-                                    <select class="form-select bg-secondary bg-opacity-25 border-secondary text-white" name="eta_minutes" required>
-                                        <option value="15" selected>15 Minutes (Rapid)</option>
-                                        <option value="30">30 Minutes (Standard)</option>
-                                        <option value="60">1 Hour (Bulk Ops)</option>
-                                    </select>
+                            <div class="d-flex gap-5">
+                                <div>
+                                    <span class="label-pro">Donor Contact</span>
+                                    <a href="tel:{{ m.contact_number }}" class="text-white fw-900 text-decoration-none fs-5"><i class="bi bi-telephone-fill text-success me-2"></i>{{ m.contact_number }}</a>
                                 </div>
-                                <button type="submit" class="btn btn-warning w-100 py-3 fw-bold rounded-4 shadow-lg">
-                                    INITIALIZE PICKUP
-                                </button>
+                                <div>
+                                    <span class="label-pro">Location</span>
+                                    <span class="text-secondary small d-block">{{ m.address }}</span>
+                                </div>
+                            </div>
+                            <form action="{{ url_for('food_rescue.picked_up_rescue') }}" method="POST">
+                                <input type="hidden" name="rescue_id" value="{{ m.id }}">
+                                <button type="submit" class="btn btn-outline-success fw-bold rounded-pill px-5 py-2">Mark Picked Up</button>
                             </form>
                         </div>
                     </div>
                 </div>
+                {% endif %}
+            {% else %}
+            <div class="col-12">
+                <p class="text-secondary small opacity-50">You have no active rescue missions currently unclaimed.</p>
             </div>
-            {% endif %}
-        {% else %}
-        <div class="col-12 text-center py-5 radar-container">
-            <div class="position-absolute top-50 start-50 translate-middle">
-                <div class="pulsing-dot mb-4" style="width: 40px; height: 40px;"></div>
-                <h4 class="text-secondary">Scanning Satellite Feed...</h4>
-                <p class="text-muted small">No active wedding or event surpluses detected in your sector.</p>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-
-    <!-- My En Route Pickups -->
-    <h4 class="fw-bold mt-5 mb-4 border-bottom border-secondary pb-2"><i class="bi bi-truck text-success me-2"></i> My Active Dispatches (En Route)</h4>
-    <div class="row g-4">
-        {% for m in my_claims %}
-            {% if m.status == 'Claimed' %}
-            <div class="col-md-6">
-                <div class="glass-card p-4 border-success" style="--bs-border-opacity: .4;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-success rounded-pill px-3">En Route - ETA {{ m.eta_minutes }}m</span>
-                        <span class="text-secondary small">Claimed at {{ m.claimed_at.strftime('%H:%M') }}</span>
-                    </div>
-                    
-                    <h5 class="fw-bold text-white mb-2">{{ m.event_type }} <span class="text-muted fw-normal">(For {{ m.quantity_persons }})</span></h5>
-                    
-                    <div class="row mt-4">
-                        <div class="col-sm-6 mb-3">
-                            <span class="text-secondary small fw-bold text-uppercase d-block">Contact Donor</span>
-                            <a href="tel:{{ m.contact_number }}" class="text-white fs-5 fw-bold text-decoration-none"><i class="bi bi-telephone-fill text-success me-2"></i>{{ m.contact_number }}</a>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <span class="text-secondary small fw-bold text-uppercase d-block">Location</span>
-                            <span class="text-white small"><i class="bi bi-pin-map-fill text-danger me-1"></i>{{ m.address }}</span>
-                        </div>
-                    </div>
-
-                    <form action="{{ url_for('food_rescue.picked_up_rescue') }}" method="POST" class="mt-3">
-                        <input type="hidden" name="rescue_id" value="{{ m.id }}">
-                        <button type="submit" class="btn btn-outline-success w-100 rounded-pill fw-bold border-2">
-                            <i class="bi bi-check-circle-fill me-2"></i> Mark as Successfully Picked Up
-                        </button>
-                    </form>
-                </div>
-            </div>
-            {% endif %}
-        {% else %}
-        <div class="col-12">
-            <p class="text-secondary">You have no active dispatches en route.</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

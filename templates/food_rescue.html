@@ -1,161 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Mega Food Rescue | DonateWise</title>
+    <title>Mega Food Rescue | DonateWise Pro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<style>
-    body {
-        background-color: #0f172a;
-        color: #f8fafc;
-    }
-    
-    .hero-section {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
-        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-        padding: 100px 0;
-        position: relative;
-        overflow: hidden;
-    }
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --accent: #ef4444;
+            --dark: #0f172a;
+            --slate: #1e293b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle at center, rgba(245, 158, 11, 0.15) 0%, transparent 50%);
-        animation: pulseglow 8s infinite alternate;
-        z-index: 0;
-    }
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    @keyframes pulseglow {
-        0% { transform: scale(0.9); opacity: 0.5; }
-        100% { transform: scale(1.1); opacity: 1; }
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.05) 0%, transparent 20%);
+        }
 
-    .glass-card {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
 
-    .text-amber { color: #f59e0b !important; }
-    .bg-gradient-amber { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-    
-    .badge-urgent {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-    }
+        /* 🌐 GLASS NAVBAR */
+        .navbar-pro {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.25rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .rescue-card {
-        transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-    .rescue-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(245, 158, 11, 0.5);
-    }
-</style>
+        .nav-link-pro {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+        }
+        .nav-link-pro:hover, .nav-link-pro.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
 
-<div class="hero-section text-center">
-    <div class="container position-relative" style="z-index: 1;">
-        <span class="badge badge-urgent px-3 py-2 rounded-pill fs-6 mb-4">
-            <i class="bi bi-clock-history"></i> Zero-Waste Events Initiative
-        </span>
-        <h1 class="display-3 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">
-            Event <span class="text-amber">Food Rescue</span>
-        </h1>
-        <p class="lead text-secondary mx-auto mb-5" style="max-width: 600px;">
-            Had a wedding, birthday, or corporate event? Don't let bulk food go to waste. 
-            Submit a Mega Rescue request and our network of verified NGOs will dispatch a team immediately.
-        </p>
+        /* 🚀 ADVANCED HERO */
+        .hero-section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 100px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 100%);
+        }
 
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{{ url_for('food_rescue.submit_rescue') }}" class="btn btn-lg bg-gradient-amber text-white border-0 px-5 py-3 rounded-pill shadow-lg fw-bold" style="letter-spacing: 1px;">
-                <i class="bi bi-megaphone-fill me-2"></i> Report Surplus Food
+        .hero-orb {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+            top: -100px; right: -100px;
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 12s infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-30px) scale(1.1); }
+        }
+
+        .badge-urgent {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px; font-weight: 800; font-size: 0.75rem;
+            padding: 10px 20px; border-radius: 100px; margin-bottom: 2rem;
+            display: inline-block; backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            font-weight: 950;
+            letter-spacing: -3px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 700px; margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        /* ✨ PRO BUTTONS */
+        .btn-pro {
+            padding: 18px 45px;
+            border-radius: 100px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 1.1rem;
+        }
+        .btn-amber {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: white; border: none;
+            box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.4);
+        }
+        .btn-amber:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -10px rgba(245, 158, 11, 0.5);
+            color: white;
+        }
+
+        /* 📋 HOW IT WORKS SECTION */
+        .step-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 2.5rem;
+            text-align: center; height: 100%;
+            transition: all 0.4s;
+        }
+        .step-card:hover {
+            background: rgba(30, 41, 59, 0.6);
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+        .step-icon {
+            width: 70px; height: 70px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem; font-size: 1.8rem; color: var(--primary);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* 📊 IMPACT WIDGETS */
+        .glass-widget {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            padding: 4rem;
+            position: relative; overflow: hidden;
+        }
+        .counter-val {
+            font-size: 6rem; font-weight: 900; letter-spacing: -5px;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0; line-height: 1;
+        }
+
+        /* 🎫 TICKETS */
+        .rescue-ticket {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px; padding: 2rem;
+            height: 100%; position: relative;
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-label {
+            color: var(--primary); font-weight: 900; text-transform: uppercase;
+            letter-spacing: 3px; font-size: 0.8rem; margin-bottom: 1rem; display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar-pro">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('main.home') }}" class="text-white text-decoration-none fw-900 h4 m-0">
+                <i class="bi bi-box2-heart-fill text-amber me-2"></i>DonateWise
             </a>
-            {% if session.role == 'ngo' %}
-            <a href="{{ url_for('food_rescue.live_radar') }}" class="btn btn-lg btn-outline-light px-5 py-3 rounded-pill fw-bold" style="backdrop-filter: blur(10px);">
-                <i class="bi bi-radar me-2"></i> Open Live Radar
-            </a>
+            <div class="d-none d-md-flex gap-2">
+                <a href="{{ url_for('main.home') }}" class="nav-link-pro">Home</a>
+                <a href="{{ url_for('main.history') }}" class="nav-link-pro">History</a>
+                <a href="{{ url_for('food_rescue.landing') }}" class="nav-link-pro active">Event Rescue</a>
+                {% if session.role == 'ngo' %}
+                <a href="{{ url_for('main.ngo_dashboard') }}" class="nav-link-pro">NGO Portal</a>
+                {% endif %}
+            </div>
+            {% if session.user_id or session.ngo_id %}
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">Logout</a>
             {% endif %}
         </div>
-    </div>
-</div>
+    </nav>
 
-<div class="container py-5 mt-5">
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6 mb-4 mb-md-0">
-            <div class="glass-card p-5 text-center h-100 d-flex flex-column justify-content-center">
-                <i class="bi bi-fire text-amber display-1 mb-3"></i>
-                <h2 class="display-4 fw-bold text-white mb-0">{{ total_meals_available }}</h2>
-                <p class="text-secondary text-uppercase tracking-wide mt-2">Active Meals Waiting For Rescue</p>
+    <div class="hero-orb"></div>
+
+    <section class="hero-section text-center">
+        <div class="container" style="z-index: 10;">
+            <div class="badge-urgent fade-in-up" style="animation-delay: 0.1s;">
+                <i class="bi bi-broadcast pulse me-2"></i> High-Priority Food Rescue Channel
+            </div>
+            <h1 class="hero-title fade-in-up" style="animation-delay: 0.2s;">
+                Save Surplus <br> <span style="background: linear-gradient(135deg, #fca311, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Event Food</span>
+            </h1>
+            <p class="hero-subtitle fade-in-up" style="animation-delay: 0.3s;">
+                Had a wedding, birthday, or corporate gathering? Don't let bulk food go to waste. 
+                Our rapid dispatch system connects you to verified NGOs within minutes.
+            </p>
+
+            <div class="d-flex justify-content-center gap-4 fade-in-up" style="animation-delay: 0.4s;">
+                <a href="{{ url_for('food_rescue.submit_rescue') }}" class="btn-pro btn-amber">
+                    <i class="bi bi-megaphone-fill"></i> Launch Rescue
+                </a>
+                {% if session.role == 'ngo' %}
+                <a href="{{ url_for('food_rescue.live_radar') }}" class="btn-pro btn-outline-light rounded-pill">
+                    <i class="bi bi-radar"></i> Live Radar
+                </a>
+                {% endif %}
             </div>
         </div>
-        <div class="col-md-6">
-            <h3 class="fw-bold mb-4">The Urgency is <span class="text-amber">Real</span>.</h3>
-            <p class="text-secondary fs-5 lh-lg mb-4">
-                Cooked food from events spoils rapidly. The standard donation process is often too slow for bulk event catering leftovers. 
-            </p>
-            <p class="text-secondary fs-5 lh-lg">
-                <strong>Event Food Rescue</strong> is an ultra-fast channel. By filling out the rescue form and taking the safety pledge, we immediately blast your location to all verified nearby NGOs through the "Live Radar" so they can claim it.
-            </p>
+    </section>
+
+    <!-- 📋 HOW IT WORKS -->
+    <div class="container py-5 mb-5">
+        <div class="text-center mb-5">
+            <span class="section-label">The Protocol</span>
+            <h2 class="display-5 fw-900 text-white">How it works</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="step-icon"><i class="bi bi-clipboard-check"></i></div>
+                    <h4 class="text-white fw-800">Report Surface</h4>
+                    <p class="text-secondary small">Fill a 30-second form about your event and food quantity.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card fade-in-up" style="animation-delay: 0.6s;">
+                    <div class="step-icon"><i class="bi bi-broadcast-pin"></i></div>
+                    <h4 class="text-white fw-800">Live Broadcast</h4>
+                    <p class="text-secondary small">Nearby verified NGOs receive a high-priority "Mega Rescue" alert.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card fade-in-up" style="animation-delay: 0.7s;">
+                    <div class="step-icon"><i class="bi bi-truck"></i></div>
+                    <h4 class="text-white fw-800">Rapid Pickup</h4>
+                    <p class="text-secondary small">An NGO team arrives at your venue for a professional pickup.</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Active Rescues Preview -->
-    <div class="mt-5 pt-5 border-top border-secondary">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold m-0"><i class="bi bi-broadcast text-amber me-2"></i> Live Rescues Happening Now</h4>
-            {% if session.role != 'ngo' %}
-            <span class="text-muted small">NGOs are monitoring this board live</span>
-            {% endif %}
+    <div class="container py-5 mb-5 fade-in-up" style="animation-delay: 0.8s;">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="glass-widget">
+                    <div class="section-label">Real-Time Impact</div>
+                    <div class="counter-val">{{ total_meals_available }}</div>
+                    <h3 class="fw-800 text-white mt-2">Active Meals Seeking Rescue</h3>
+                    <div class="line-accent mt-4" style="width: 100px; height: 2px; background: var(--primary);"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="section-label">Community Safety</span>
+                <h2 class="display-5 fw-900 text-white mb-4">Quality & <span class="text-amber">Trust</span></h2>
+                <p class="text-secondary fs-5 lh-lg mb-4">
+                    Bulk event food is highly perishable. Standard donation channels are too slow for large-scale catering surplus. 
+                    We ensure only verified NGOs with cold-storage capacity respond to our Mega Rescues.
+                </p>
+                <div class="d-flex gap-4 mt-5">
+                    <div class="text-center">
+                        <div class="p-3 bg-light bg-opacity-10 rounded-4 mb-2"><i class="bi bi-shield-check text-primary fs-3"></i></div>
+                        <small class="fw-bold d-block text-secondary">Verified NGOs</small>
+                    </div>
+                    <div class="text-center">
+                        <div class="p-3 bg-light bg-opacity-10 rounded-4 mb-2"><i class="bi bi-thermometer-snow text-info fs-3"></i></div>
+                        <small class="fw-bold d-block text-secondary">Safe Handling</small>
+                    </div>
+                    <div class="text-center">
+                        <div class="p-3 bg-light bg-opacity-10 rounded-4 mb-2"><i class="bi bi-heart-fill text-danger fs-3"></i></div>
+                        <small class="fw-bold d-block text-secondary">Zero Waste</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📜 LIVE FEED -->
+    <div class="container py-5 border-top border-secondary border-opacity-10 fade-in-up" style="animation-delay: 1.0s;">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <span class="section-label">Live Dispatch Feed</span>
+                <h3 class="fw-900 text-white h4 m-0">Active Rescue Missions</h3>
+            </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 mb-5">
             {% for r in active_rescues[:3] %}
             <div class="col-md-4">
-                <div class="glass-card rescue-card p-4 h-100 relative">
-                    {% if r.is_expired %}
-                        <div class="position-absolute top-0 end-0 mt-3 me-3 badge bg-danger opacity-75">Expired</div>
-                    {% else %}
-                        <div class="position-absolute top-0 end-0 mt-3 me-3 badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> {{ r.hours_remaining }}h left</div>
-                    {% endif %}
-                    
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-gradient-amber p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                            <i class="bi bi-cup-hot-fill text-white fs-4"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h5 class="mb-0 fw-bold">{{ r.event_type }}</h5>
-                            <small class="text-secondary">Food for {{ r.quantity_persons }} people</small>
-                        </div>
+                <div class="rescue-ticket">
+                    <div class="d-flex justify-content-between">
+                        <div class="p-3 bg-white bg-opacity-5 rounded-4"><i class="bi bi-cup-hot-fill text-amber fs-4"></i></div>
+                        <span class="badge bg-success bg-opacity-20 text-success rounded-pill px-3 py-2 small fw-bold">ACTIVE</span>
                     </div>
-                    <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ r.address }}</p>
-                    <div class="d-flex align-items-center justify-content-between border-top border-secondary pt-3 mt-auto">
-                        <span class="badge bg-dark border border-secondary text-light">{{ r.food_type }}</span>
-                        <span class="text-secondary small">{{ r.created_at_fmt[11:16] }}</span>
+                    <div>
+                        <h4 class="fw-900 text-white mb-2">{{ r.event_type }}</h4>
+                        <p class="text-secondary small mb-3">Support for <strong>{{ r.quantity_persons }}</strong> individuals</p>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt-fill text-danger small"></i>
+                            <span class="text-muted small">{{ r.address }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
             {% else %}
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-check2-circle text-secondary display-1 opacity-50 mb-3"></i>
-                <h5 class="text-muted">No urgent rescues active right now.</h5>
-                <p class="text-secondary small">All food has been safely claimed.</p>
+            <div class="col-12 text-center py-5 border-0 glass-widget" style="padding: 100px 0;">
+                <i class="bi bi-check-all text-secondary display-1 opacity-20 mb-3"></i>
+                <h5 class="text-muted fw-800">Section Clear: All Surplus Salvaged</h5>
+                <p class="text-secondary small">Join our network to ensure no food goes to waste.</p>
             </div>
             {% endfor %}
         </div>
     </div>
-</div>
+
+    <footer class="py-5 text-center mt-5" style="background: rgba(15, 23, 42, 0.5); border-top: 1px solid var(--glass-border);">
+        <p class="text-secondary small">&copy; 2026 DonateWise — High-Priority Food Rescue Division</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.fade-in-up').forEach((el, i) => {
+            el.style.animationDelay = (i * 0.1) + 's';
+        });
+    </script>
 </body>
+
 </html>

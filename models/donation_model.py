@@ -13,8 +13,9 @@ def get_all_donations():
     for d in donations:
         d['id'] = str(d['_id'])
         del d['_id']
-        if 'created_at' in d: d['created_at'] = str(d['created_at'])
-        if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
+        # Keep as datetime objects for Jinja2 strftime()
+        # if 'created_at' in d: d['created_at'] = str(d['created_at'])
+        # if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
         # Get donor name
         user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
@@ -84,9 +85,17 @@ def get_unclaimed_donations():
     for d in records:
         d['id'] = str(d['_id'])
         del d['_id']
-        if 'created_at' in d: d['created_at'] = str(d['created_at'])
-        if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
-        user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
+        # Keep as datetime objects for template formatting
+        # if 'created_at' in d: d['created_at'] = str(d['created_at'])
+        # if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
+        # 👤 Fetch Donor Name safely
+        user_id = d.get('user_id')
+        user = None
+        if user_id:
+            try:
+                user = db.users.find_one({"_id": ObjectId(user_id)})
+            except:
+                pass
         d['user_name'] = user['name'] if user else "Donor"
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
         d['pickup_recommended'] = should_recommend_pickup(
@@ -103,9 +112,17 @@ def get_claimed_donations(ngo_id):
     for d in claimed:
         d['id'] = str(d['_id'])
         del d['_id']
-        if 'created_at' in d: d['created_at'] = str(d['created_at'])
-        if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
-        user = db.users.find_one({"_id": ObjectId(d['user_id'])}) if d.get('user_id') else None
+        # Keep as datetime objects for template strftime formatting
+        # if 'created_at' in d: d['created_at'] = str(d['created_at'])
+        # if 'claimed_at' in d: d['claimed_at'] = str(d['claimed_at'])
+        # 👤 Fetch Donor Name safely
+        user_id = d.get('user_id')
+        user = None
+        if user_id:
+            try:
+                user = db.users.find_one({"_id": ObjectId(user_id)})
+            except:
+                pass
         d['user_name'] = user['name'] if user else "Donor"
         
         ngo = db.ngos.find_one({"_id": ObjectId(ngo_id)})

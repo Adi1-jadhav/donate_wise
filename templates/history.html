@@ -129,6 +129,12 @@
             height: 4px;
         }
 
+        .bar-mega { background: linear-gradient(90deg, #e11d48, #f43f5e); }
+        .bar-fulfilled { background: linear-gradient(90deg, #10b981, #34d399); }
+        .bar-dispatched { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+        .bar-claimed { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .bar-pending { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
         .card-content {
             padding: 1.75rem;
         }
@@ -518,8 +524,7 @@
                 {% set status = item.pickup_status %}
                 <div class="donation-card">
                     <!-- Top color bar by status -->
-                    <div class="card-top-bar"
-                        style="background: {% if item.is_mega_rescue %}linear-gradient(90deg, #e11d48, #f43f5e){% elif status == 'Fulfilled' %}linear-gradient(90deg, #10b981, #34d399){% elif status == 'Dispatched' %}linear-gradient(90deg, #4f46e5, #818cf8){% elif item.claimed_by %}linear-gradient(90deg, #8b5cf6, #a78bfa){% else %}linear-gradient(90deg, #f59e0b, #fbbf24){% endif %};">
+                    <div class="card-top-bar {% if item.is_mega_rescue %}bar-mega{% elif status == 'Fulfilled' %}bar-fulfilled{% elif status == 'Dispatched' %}bar-dispatched{% elif item.claimed_by %}bar-claimed{% else %}bar-pending{% endif %}">
                     </div>
 
                     <div class="card-content {% if item.is_mega_rescue %}bg-light bg-opacity-50{% endif %}">
@@ -593,8 +598,9 @@
                                         class="spinner-live"></span>Live Pickup Active</div>
                                 <div class="text-muted small">The NGO has started their journey to your location.</div>
                             </div>
-                            <button class="btn-track"
-                                onclick="openTracker('{{ item.location }}', '{{ item.ngo_location or '' }}', '{{ item.ngo_name or 'NGO' }}')">
+                            <button class="btn-track" 
+                                data-loc="{{ item.location }}" data-ngoloc="{{ item.ngo_location or '' }}" data-ngoname="{{ item.ngo_name or 'NGO' }}"
+                                onclick="openTracker(this.dataset.loc, this.dataset.ngoloc, this.dataset.ngoname)">
                                 <i class="bi bi-broadcast"></i> Track
                             </button>
                         </div>
@@ -658,7 +664,8 @@
                             </a>
                             {% elif item.claimed_by %}
                             <button class="btn-track"
-                                onclick="openTracker('{{ item.location }}', '{{ item.ngo_location or '' }}', '{{ item.ngo_name }}')">
+                                data-loc="{{ item.location }}" data-ngoloc="{{ item.ngo_location or '' }}" data-ngoname="{{ item.ngo_name }}"
+                                onclick="openTracker(this.dataset.loc, this.dataset.ngoloc, this.dataset.ngoname)">
                                 <i class="bi bi-geo-alt-fill"></i> Track Pickup
                             </button>
                             {% endif %}
@@ -731,6 +738,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let leafMap;
+
+        function openTracker(donorLoc, ngoLoc, ngoName) {
+            // Placeholder for now, map logic is initialized later
+            console.log('Tracking:', donorLoc, ngoLoc, ngoName);
+        }
 
         // ── Known Pune area coordinates lookup (avoids geocoding failures)
         const PUNE_AREAS = {

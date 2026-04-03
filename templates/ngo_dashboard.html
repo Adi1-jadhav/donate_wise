@@ -188,6 +188,11 @@
                             Urgent Needs <span class="badge bg-danger rounded-pill nav-badge">LIVE</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning fw-bold" href="{{ url_for('food_rescue.live_radar') }}">
+                            <i class="bi bi-radar me-1"></i>Mega Food Radar
+                        </a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.history') }}">History</a></li>
                     {% if session.get('ngo_id') %}
                     <li class="nav-item"><a class="nav-link btn btn-outline-primary ms-lg-3"
@@ -219,6 +224,17 @@
                 class="bi bi-check-circle-fill me-2"></i>{{ messages[0]|safe }}</div>
         {% endif %}
         {% endwith %}
+
+        <!-- 🚨 MEGA FOOD RESCUE BANNER -->
+        <div class="alert bg-warning text-dark border-warning shadow-sm rounded-3 mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold mb-1"><i class="bi bi-lightning-charge-fill text-danger me-2"></i>Event Food Rescue (Live Radar)</h5>
+                <p class="mb-0">Bulk/Perishable food from weddings and events is monitored in a separate high-priority dashboard!</p>
+            </div>
+            <a href="{{ url_for('food_rescue.live_radar') }}" class="btn btn-dark fw-bold rounded-pill px-4 shadow-sm" style="flex-shrink:0;">
+                <i class="bi bi-radar me-1"></i> Open Radar
+            </a>
+        </div>
 
         <!-- 🗺️ LIVE DONATION RADAR -->
         <div class="fade-in mb-5">

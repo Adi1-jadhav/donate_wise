@@ -97,10 +97,16 @@
             <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                 <ul class="navbar-nav align-items-center gap-2">
                     <li class="nav-item">
-                        <a href="{{ url_for('main.home') }}" class="nav-link fw-semibold">Home</a>
+                        <a href="{{ url_for('main.home') }}" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url_for('main.ngo_dashboard') }}" class="nav-link fw-semibold">Dashboard</a>
+                        <a href="{{ url_for('main.ngo_dashboard') }}" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.ngo_claimed') }}" class="nav-link">Claimed Items</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.ngo_needs') }}" class="nav-link active">Urgent Needs</a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-lg-2 fw-semibold">Logout</a>

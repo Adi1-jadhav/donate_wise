@@ -224,32 +224,38 @@
 
             {% if claimed %}
             {% for d in claimed %}
-            <div class="dispatch-ticket {% if d.pickup_status == 'Dispatched' %}en-route{% elif d.pickup_status == 'Fulfilled' %}fulfilled{% endif %}">
-                <div class="ticket-icon">
-                    {% if d.predicted_category == 'Food' %}<i class="bi bi-egg-fried"></i>
-                    {% elif d.predicted_category == 'Clothes' %}<i class="bi bi-tag"></i>
-                    {% elif d.predicted_category == 'Electronics' %}<i class="bi bi-cpu"></i>
-                    {% else %}<i class="bi bi-box-seam"></i>{% endif %}
-                </div>
+            <div class="dispatch-ticket {% if d.pickup_status == 'Dispatched' %}en-route{% elif d.pickup_status == 'Fulfilled' %}fulfilled{% endif %} d-flex flex-column align-items-start p-4">
+                <div class="d-flex align-items-center w-100">
+                    <div class="ticket-icon">
+                        {% if d.predicted_category == 'Food' %}<i class="bi bi-egg-fried"></i>
+                        {% elif d.predicted_category == 'Clothes' %}<i class="bi bi-tag"></i>
+                        {% elif d.predicted_category == 'Electronics' %}<i class="bi bi-cpu"></i>
+                        {% else %}<i class="bi bi-box-seam"></i>{% endif %}
+                    </div>
 
-                <div class="ticket-body">
-                    <div class="ticket-title">{{ d.title }}</div>
-                    <div class="ticket-meta">
-                        <span><i class="bi bi-diagram-3 me-1"></i> {{ d.predicted_category }}</span>
-                        <span><i class="bi bi-boxes me-1"></i> {{ d.quantity }} Units</span>
-                        <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ d.location }}</span>
-                        <span class="fw-bold {% if d.pickup_status == 'Dispatched' %}text-primary{% elif d.pickup_status == 'Fulfilled' %}text-success{% else %}text-warning{% endif %}">
-                            <i class="bi bi-info-circle me-1"></i> {{ d.pickup_status }}
-                        </span>
+                    <div class="ticket-body ps-3 flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="ticket-title m-0">{{ d.title }}</div>
+                                <div class="ticket-meta">
+                                    <span><i class="bi bi-diagram-3 me-1"></i> {{ d.predicted_category }}</span>
+                                    <span><i class="bi bi-boxes me-1"></i> {{ d.quantity }} Units</span>
+                                    <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ d.location }}</span>
+                                    <span class="fw-bold {% if d.pickup_status == 'Dispatched' %}text-primary{% elif d.pickup_status == 'Fulfilled' %}text-success{% else %}text-warning{% endif %}">
+                                        <i class="bi bi-info-circle me-1"></i> {{ d.pickup_status }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button class="btn btn-light btn-sm rounded-pill fw-bold" onclick="this.closest('.dispatch-ticket').querySelector('.details-panel').classList.toggle('d-none');">
+                                    <i class="bi bi-info-circle me-1"></i> Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <button class="btn btn-light btn-sm rounded-pill fw-bold" onclick="this.closest('.dispatch-ticket').querySelector('.details-panel').classList.toggle('d-none');">
-                    <i class="bi bi-info-circle me-1"></i> Details
-                </button>
-            </div>
-
-                <!-- 🧩 EXPANDED DETAILS PANEL -->
+                <!-- 🧩 EXPANDED DETAILS PANEL (Now correctly nested) -->
                 <div class="details-panel d-none w-100 mt-4 pt-4" style="border-top: 1px dashed #e2e8f0;">
                     <div class="row g-4">
                         {% if d.image_filename %}
@@ -295,7 +301,6 @@
                         <iframe width="100%" height="250" frameborder="0" style="display:block;"
                             src="https://maps.google.com/maps?q={{ d.location | urlencode }}&output=embed&z=15"
                             loading="lazy"></iframe>
-                    </div>
                 </div>
             </div>
             {% endfor %}

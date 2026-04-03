@@ -383,7 +383,7 @@
                                 <div class="col-md-{{ '6' if d.image_filename else '12' }} mb-3">
                                     <strong class="small text-muted d-block mb-1">Location Map</strong>
                                     <iframe width="100%" height="160" class="rounded shadow-sm border" loading="lazy"
-                                        src="https://www.google.com/maps?q={{ d.location }}&output=embed"
+                                        src="https://www.google.com/maps?q={{ d.location | urlencode }}&output=embed"
                                         allowfullscreen></iframe>
                                 </div>
                             </div>

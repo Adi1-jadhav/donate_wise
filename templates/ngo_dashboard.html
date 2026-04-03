@@ -342,13 +342,13 @@
                         </div>
                     </div>
 
-                    <div class="d-flex flex-column gap-2" style="min-width: 160px; border-left: 1px dashed #e2e8f0; padding-left: 1.5rem;">
+                    <div class="d-flex flex-column gap-2" style="min-width: 140px; border-left: 1px dashed rgba(0,0,0,0.06); padding-left: 1.5rem;">
                         {% if not d.claimed_by %}
-                        <button class="btn btn-primary btn-pro-sm w-100" data-bs-toggle="modal" data-bs-target="#claimModal{{ d.id }}">Claim</button>
+                        <button class="btn btn-primary btn-pro-sm w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#claimModal{{ d.id }}">Claim Mission</button>
                         {% else %}
-                        <a href="{{ url_for('main.ngo_claimed') }}" class="btn btn-outline-success btn-pro-sm w-100">View Tracking</a>
+                        <a href="{{ url_for('main.ngo_claimed') }}" class="btn btn-outline-success btn-pro-sm w-100 fw-bold">Active Tracking</a>
                         {% endif %}
-                        <button class="btn btn-light btn-pro-sm w-100 text-muted" onclick="this.closest('.dispatch-card').querySelector('.details').classList.toggle('d-none');">Details</button>
+                        <button class="btn btn-light btn-pro-sm w-100 text-muted fw-800" onclick="this.closest('.dispatch-card').querySelector('.details').classList.toggle('d-none');">Mission Details</button>
                     </div>
 
                     <!-- Details Area (Expanded) -->

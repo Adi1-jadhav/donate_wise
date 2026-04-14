@@ -6,9 +6,9 @@ from bson import ObjectId
 from datetime import datetime, timedelta
 
 # 🔍 All Donations + Donor Info
-def get_all_donations():
+def get_all_donations(limit=50):
     db = get_db()
-    donations = list(db.donations.find().sort("created_at", -1))
+    donations = list(db.donations.find().sort("created_at", -1).limit(limit))
     
     for d in donations:
         d['id'] = str(d['_id'])
@@ -78,9 +78,9 @@ def update_pickup_status(donation_id, status):
     print(f"✅ Pickup status updated to '{status}' for donation ID: {donation_id}")
 
 # 📥 Unclaimed Donations
-def get_unclaimed_donations():
+def get_unclaimed_donations(limit=50):
     db = get_db()
-    records = list(db.donations.find({"claimed_by": None}).sort("created_at", -1))
+    records = list(db.donations.find({"claimed_by": None}).sort("created_at", -1).limit(limit))
     
     for d in records:
         d['id'] = str(d['_id'])
@@ -104,10 +104,10 @@ def get_unclaimed_donations():
     return records
 
 # ✅ Claimed Donations by NGO
-def get_claimed_donations(ngo_id):
+def get_claimed_donations(ngo_id, limit=50):
     db = get_db()
     # In MongoDB, we can just find donations where claimed_by == ngo_id
-    claimed = list(db.donations.find({"claimed_by": str(ngo_id)}).sort("claimed_at", -1))
+    claimed = list(db.donations.find({"claimed_by": str(ngo_id)}).sort("claimed_at", -1).limit(limit))
     
     for d in claimed:
         d['id'] = str(d['_id'])

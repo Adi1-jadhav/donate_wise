@@ -13,7 +13,7 @@ pwa_snippet = """
     </script>
 """
 
-files = ['landing.html', 'donate.html', 'dashboard.html', 'ngo_dashboard.html', 'history.html', 'profile.html']
+files = ['landing.html', 'donate.html', 'dashboard.html', 'ngo_dashboard.html', 'history.html', 'profile.html', 'register.html', 'donor_login.html', 'ngo_login.html', 'admin_login.html']
 project_dir = r"c:\Users\Rahul Bhamare\.gemini\antigravity\scratch\-Helping-Hand-Intelligent-System-main"
 template_dir = os.path.join(project_dir, 'templates')
 

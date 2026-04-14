@@ -277,12 +277,6 @@ def dashboard():
     conn.close()
     """
 
-    for d in donations:
-        d['pickup_recommended'] = False
-        if d.get('pickup_required'):
-            d['pickup_recommended'] = should_recommend_pickup(
-                d['quantity'], d['predicted_category'], d['description']
-            )
     return render_template('dashboard.html', donations=donations, stats=stats, pending_ngos=pending_ngos)
 
 @main.route('/donate', methods=['GET', 'POST'])
@@ -746,7 +740,7 @@ def ngo_dashboard():
     for d in unclaimed + claimed:
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
         d['pickup_recommended'] = should_recommend_pickup(
-            d['quantity'], d['predicted_category'], d['description']
+            d.get('quantity'), d.get('predicted_category'), d.get('description')
         )
         
         # Check if nearby

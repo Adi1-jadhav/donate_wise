@@ -99,7 +99,7 @@ def get_unclaimed_donations():
         d['user_name'] = user['name'] if user else "Donor"
         d['pickup_status'] = d.get('pickup_status') or 'Pending'
         d['pickup_recommended'] = should_recommend_pickup(
-            d['quantity'], d['predicted_category'], d['description']
+            d.get('quantity'), d.get('predicted_category'), d.get('description')
         )
     return records
 
